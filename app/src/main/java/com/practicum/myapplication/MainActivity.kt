@@ -1,7 +1,7 @@
 package com.practicum.myapplication
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,16 +29,24 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                MainScreen()
+                MainScreen(
+                    onSearchClick = { startActivity(Intent(this, SearchActivity::class.java)) },
+                    onPlaylistsClick = { },
+                    onFavoritesClick = { },
+                    onSettingsClick = { startActivity(Intent(this, SettingsActivity::class.java)) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun MainScreen() {
-    val context = LocalContext.current
-
+fun MainScreen(
+    onSearchClick: () -> Unit = {},
+    onPlaylistsClick: () -> Unit = {},
+    onFavoritesClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,13 +82,7 @@ fun MainScreen() {
                 MenuItem(
                     icon = Icons.Default.Search,
                     title = "Поиск",
-                    onClick = {
-                        Toast.makeText(
-                            context,
-                            "Нажата кнопка \"Поиск\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    onClick = onSearchClick
                 )
 
                 MenuDivider()
@@ -90,13 +91,7 @@ fun MainScreen() {
                 MenuItem(
                     icon = Icons.Default.List,
                     title = "Плейлисты",
-                    onClick = {
-                        Toast.makeText(
-                            context,
-                            "Нажата кнопка \"Плейлисты\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    onClick = onPlaylistsClick
                 )
 
                 MenuDivider()
@@ -105,13 +100,7 @@ fun MainScreen() {
                 MenuItem(
                     icon = Icons.Default.Favorite,
                     title = "Избранное",
-                    onClick = {
-                        Toast.makeText(
-                            context,
-                            "Нажата кнопка \"Избранное\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    onClick = onFavoritesClick
                 )
 
                 MenuDivider()
@@ -120,13 +109,7 @@ fun MainScreen() {
                 MenuItem(
                     icon = Icons.Default.Settings,
                     title = "Настройки",
-                    onClick = {
-                        Toast.makeText(
-                            context,
-                            "Нажата кнопка \"Настройки\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    onClick = onSettingsClick
                 )
             }
         }
