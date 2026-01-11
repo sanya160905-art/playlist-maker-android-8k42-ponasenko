@@ -33,3 +33,11 @@
     - Реализован PlaylistHost с NavHost и NavController
     - Настроена правильная навигация между MainScreen, SearchScreen, SettingsScreen
     - Заменены прямые вызовы startActivity на navigation через NavController
+
+### Sprint 5
+- **Архитектура приложения и репозиторий для поиска**
+    - Реализована Clean Architecture с пакетами: data, domain, ui, creator
+    - Создан слой Data (TrackDto, TracksRepositoryImpl, RetrofitNetworkClient)
+    - Создан слой Domain (NetworkClient, TracksRepository interfaces)
+    - Добавлен класс Storage для эмуляции ответа сервера
+    - Подготовлена основа для будущего экрана поиска треков

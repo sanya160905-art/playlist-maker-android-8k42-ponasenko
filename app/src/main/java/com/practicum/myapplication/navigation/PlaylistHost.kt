@@ -7,65 +7,43 @@ import androidx.navigation.compose.composable
 import com.practicum.myapplication.screens.MainMenuScreen
 import com.practicum.myapplication.screens.SearchScreen
 import com.practicum.myapplication.screens.SettingsScreen
-import androidx.compose.ui.Modifier
-
-
+import com.practicum.myapplication.viewmodel.SearchViewModel
 
 @Composable
 fun PlaylistHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    searchViewModel: SearchViewModel? = null
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavigationScreen.MAIN_MENU.name,
-        modifier = modifier
+        startDestination = NavigationScreen.MAIN_MENU.name
     ) {
-        // Главное меню
         composable(NavigationScreen.MAIN_MENU.name) {
             MainMenuScreen(
-                onSearchClick = { navigateToSearch(navController) },
-                onPlaylistsClick = { /* будет позже */ },
-                onFavoritesClick = { /* будет позже */ },
-                onSettingsClick = { navigateToSettings(navController) }
+                onSearchClick = {
+                    navController.navigate(NavigationScreen.SEARCH.name)
+                },
+                onPlaylistsClick = { },
+                onFavoritesClick = { },
+                onSettingsClick = {
+                    navController.navigate(NavigationScreen.SETTINGS.name)
+                }
             )
         }
 
-        // Экран поиска
         composable(NavigationScreen.SEARCH.name) {
-            SearchScreen(
-                onBackClick = { navController.popBackStack() }
-            )
+            if (searchViewModel != null) {
+                SearchScreen(
+                    onBackClick = { navController.popBackStack() },
+                    viewModel = searchViewModel
+                )
+            }
         }
 
-        // Экран настроек
         composable(NavigationScreen.SETTINGS.name) {
             SettingsScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
-    }
-}
-
-// Методы навигации
-fun navigateToSearch(navController: NavHostController) {
-    navController.navigate(NavigationScreen.SEARCH.name)
-}
-
-fun navigateToSettings(navController: NavHostController) {
-    navController.navigate(NavigationScreen.SETTINGS.name)
-}
-
-fun navigateToPlaylists(navController: NavHostController) {
-    navController.navigate(NavigationScreen.PLAYLISTS.name)
-}
-
-fun navigateToFavorites(navController: NavHostController) {
-    navController.navigate(NavigationScreen.FAVORITES.name)
-}
-
-fun navigateToMainMenu(navController: NavHostController) {
-    navController.navigate(NavigationScreen.MAIN_MENU.name) {
-        popUpTo(NavigationScreen.MAIN_MENU.name) { inclusive = true }
     }
 }

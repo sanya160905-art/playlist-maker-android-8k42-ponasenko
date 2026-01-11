@@ -58,4 +58,11 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.navigation:navigation-compose:2.7.5")
+    // ViewModel и Lifecycle
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.1")
+    implementation("androidx.activity:activity-ktx:1.10.1")
+    // Для DSL (viewModelFactory)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
+    // Coil для загрузки изображений
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }

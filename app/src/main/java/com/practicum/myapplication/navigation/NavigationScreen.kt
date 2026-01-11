@@ -5,5 +5,6 @@ enum class NavigationScreen {
     SEARCH,
     SETTINGS,
     PLAYLISTS,
-    FAVORITES
+    FAVORITES,
+    TRACK
 }

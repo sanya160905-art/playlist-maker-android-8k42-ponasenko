@@ -1,42 +1,38 @@
 package com.practicum.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import androidx.compose.ui.tooling.preview.Preview
 import com.practicum.myapplication.navigation.PlaylistHost
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
+import com.practicum.myapplication.viewmodel.SearchViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val searchViewModel: SearchViewModel by viewModels {
+        SearchViewModel.getViewModelFactory()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
+                Scaffold(modifier = Modifier.fillMaxSize()) {
                     PlaylistHost(
                         navController = navController,
-                        modifier = Modifier.padding(paddingValues)
+                        searchViewModel = searchViewModel
                     )
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AppPreview() {
-    MyApplicationTheme {
-        val navController = rememberNavController()
-        PlaylistHost(navController = navController)
     }
 }

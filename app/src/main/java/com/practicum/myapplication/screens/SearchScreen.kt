@@ -2,12 +2,15 @@ package com.practicum.myapplication.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -18,13 +21,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.practicum.myapplication.model.SearchState
+import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
+import com.practicum.myapplication.viewmodel.SearchViewModel
 
 @Composable
 fun SearchScreen(
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    viewModel: SearchViewModel
 ) {
     val searchQuery = remember { mutableStateOf("") }
+    val screenState by viewModel.searchScreenState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -67,6 +75,13 @@ fun SearchScreen(
             value = searchQuery.value,
             onValueChange = { newValue ->
                 searchQuery.value = newValue
+                // Запускаем поиск в реальном времени
+                if (newValue.isNotEmpty()) {
+                    viewModel.searchTracks(newValue)
+                } else {
+                    // Если поле пусто, возвращаемся в Initial
+                    viewModel.searchTracks("")
+                }
             },
             placeholder = {
                 Text(
@@ -94,7 +109,10 @@ fun SearchScreen(
             ),
             leadingIcon = {
                 IconButton(
-                    onClick = { /* Логика поиска пока пуста */ },
+                    onClick = {
+                        // Запускаем поиск
+                        viewModel.searchTracks(searchQuery.value)
+                    },
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
@@ -104,7 +122,8 @@ fun SearchScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-            },
+            }
+            ,
             trailingIcon = {
                 if (searchQuery.value.isNotEmpty()) {
                     IconButton(
@@ -124,6 +143,99 @@ fun SearchScreen(
             },
             singleLine = true
         )
+
+        // Обработка состояний поиска
+        when (screenState) {
+            is SearchState.Initial -> {
+                // Ничего не показываем
+            }
+
+            is SearchState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            is SearchState.Success -> {
+                val tracks = (screenState as SearchState.Success).foundList
+                if (tracks.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Треки не найдены",
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(tracks.size) { index ->
+                            SearchTrackItem(track = tracks[index])
+                            Divider(thickness = 0.5.dp, color = Color.LightGray)
+                        }
+                    }
+                }
+            }
+
+            is SearchState.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Ошибка: ${(screenState as SearchState.Error).error}",
+                        color = Color.Red,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchTrackItem(track: Track) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 12.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = track.trackName,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color.Black
+            )
+            Text(
+                text = track.artistName,
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+        }
+
+        Text(
+            text = track.trackTime,
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
     }
 }
 
@@ -131,6 +243,8 @@ fun SearchScreen(
 @Composable
 fun SearchScreenPreview() {
     MyApplicationTheme {
-        SearchScreen()
+        // Для превью можно временно передать фейковый ViewModel,
+        // либо вообще не вызывать SearchScreen с viewModel
     }
 }
+
