@@ -1,5 +1,7 @@
 package com.practicum.myapplication
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +48,7 @@ fun SettingsScreen(
     onBackClick: () -> Unit = {}
 ) {
     val isDarkTheme = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -74,7 +79,7 @@ fun SettingsScreen(
             }
 
             Text(
-                text = "Настройки",
+                text = stringResource(id = R.string.settings_title),
                 color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -90,7 +95,7 @@ fun SettingsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Темная тема",
+                text = stringResource(id = R.string.dark_theme),
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
@@ -110,11 +115,19 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // Поделиться приложением (с иконкой Share)
+        // Поделиться приложением
         SettingsMenuItemWithIcon(
-            title = "Поделиться приложением",
+            title = stringResource(id = R.string.share_app),
             icon = Icons.Default.Share,
-            onClick = { }
+            onClick = {
+                val shareMessage = context.getString(R.string.share_message)
+                val shareIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, shareMessage)
+                    type = "text/plain"
+                }
+                context.startActivity(Intent.createChooser(shareIntent, null))
+            }
         )
 
         HorizontalDivider(
@@ -123,11 +136,23 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // Написать в поддержку (с иконкой Email)
+        // Написать разработчикам
         SettingsMenuItemWithIcon(
-            title = "Написать в поддержку",
+            title = stringResource(id = R.string.write_to_support),
             icon = Icons.Default.Email,
-            onClick = { }
+            onClick = {
+                val supportEmail = context.getString(R.string.support_email)
+                val emailSubject = context.getString(R.string.email_subject)
+                val emailBody = context.getString(R.string.email_body)
+
+                val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse("mailto:")
+                    putExtra(Intent.EXTRA_EMAIL, arrayOf(supportEmail))
+                    putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+                    putExtra(Intent.EXTRA_TEXT, emailBody)
+                }
+                context.startActivity(emailIntent)
+            }
         )
 
         HorizontalDivider(
@@ -136,16 +161,20 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // Пользовательское соглашение (с стрелкой)
+        // Пользовательское соглашение
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { }
+                .clickable {
+                    val url = context.getString(R.string.practicum_offer_url)
+                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    context.startActivity(browserIntent)
+                }
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Пользовательское соглашение",
+                text = stringResource(id = R.string.user_agreement),
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
