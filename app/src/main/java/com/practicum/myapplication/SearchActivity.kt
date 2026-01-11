@@ -8,7 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search  // ← ДОБАВЬ ЭТУ СТРОКУ
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -77,28 +78,67 @@ fun SearchScreen(
             )
         }
 
-        // Поле поиска
-        TextField(
+        // Поле поиска с иконками
+        OutlinedTextField(
             value = searchQuery.value,
-            onValueChange = { searchQuery.value = it },
-            placeholder = { Text("Поиск") },
+            onValueChange = { newValue ->
+                searchQuery.value = newValue
+            },
+            placeholder = {
+                Text(
+                    text = "Поиск",
+                    color = Color(0xFF99999B),
+                    fontSize = 16.sp
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(0xFFE8E8E8),
-                focusedContainerColor = Color(0xFFE8E8E8),
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
+            shape = RoundedCornerShape(24.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = Color(0xFFE0E0E0),
+                focusedBorderColor = Color(0xFF3772E7),
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White,
+                cursorColor = Color(0xFF3772E7),
+                focusedTextColor = Color.Black,  // Черный цвет текста при фокусе
+                unfocusedTextColor = Color.Black  // Черный цвет текста без фокуса
+            ),
+            textStyle = LocalTextStyle.current.copy(
+                color = Color.Black,  // Дополнительно устанавливаем черный цвет
+                fontSize = 16.sp
             ),
             leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = Color.Gray
-                )
-            }
+                IconButton(
+                    onClick = { /* Логика поиска пока пуста */ },
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = Color(0xFF99999B),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            },
+            trailingIcon = {
+                if (searchQuery.value.isNotEmpty()) {
+                    IconButton(
+                        onClick = {
+                            searchQuery.value = ""
+                        },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear",
+                            tint = Color(0xFF99999B),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            },
+            singleLine = true
         )
     }
 }
