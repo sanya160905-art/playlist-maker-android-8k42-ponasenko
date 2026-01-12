@@ -1,6 +1,30 @@
 # playlist-maker-android--
 Учебный проект по созданию мобильного приложения
 
+## Требования
+
+- Android Studio Otter 2 Feature Drop 2025.2.2 Patch 1
+- JDK 11 (через Android Studio)
+- Android Gradle Plugin: см. корневой `build.gradle` проекта
+- minSdk: 29
+- targetSdk: 36
+- compileSdk: 36
+
+## Как запустить
+
+1. Склонировать репозиторий:
+   git clone <URL_репозитория>
+
+2. Открыть папку проекта в Android Studio:
+   File → Open… → выбрать корень проекта.
+
+3. Дождаться синхронизации Gradle (пока исчезнет бегунок в статус‑баре).
+
+4. Подключить устройство или запустить эмулятор.
+
+5. В Android Studio выбрать конфигурацию `app` и нажать Run (зелёная кнопка).
+
+
 ## Список изменений
 
 ### Sprint 3
@@ -41,3 +65,13 @@
     - Создан слой Domain (NetworkClient, TracksRepository interfaces)
     - Добавлен класс Storage для эмуляции ответа сервера
     - Подготовлена основа для будущего экрана поиска треков
+
+### Sprint 6
+- **Реализация поиска треков с MVVM**
+    - Создан SearchViewModel с состояниями: Initial, Searching, Success, Fail
+    - Реализована функция search() для поиска через репозиторий
+    - Добавлен объект Creator для создания зависимостей
+    - Создан SearchScreen composable с обработкой всех состояний
+    - Реализован TrackListItem для отображения треков
+    - Добавлена иконка поиска с обработкой нажатия
+    - Обновлён MainActivity для подключения SearchScreen
