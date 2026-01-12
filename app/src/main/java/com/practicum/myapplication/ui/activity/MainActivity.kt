@@ -1,6 +1,5 @@
-package com.practicum.myapplication
+package com.practicum.myapplication.ui.activity
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +12,9 @@ import androidx.navigation.compose.rememberNavController
 import com.practicum.myapplication.navigation.PlaylistHost
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
 import com.practicum.myapplication.viewmodel.SearchViewModel
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+
 
 class MainActivity : ComponentActivity() {
 
@@ -20,19 +22,29 @@ class MainActivity : ComponentActivity() {
         SearchViewModel.getViewModelFactory()
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) {
-                    PlaylistHost(
-                        navController = navController,
-                        searchViewModel = searchViewModel
-                    )
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                    ) {
+                        PlaylistHost(
+                            navController = navController,
+                            searchViewModel = searchViewModel
+                        )
+                    }
                 }
             }
         }
+
     }
 }

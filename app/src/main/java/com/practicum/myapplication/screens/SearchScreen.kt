@@ -1,10 +1,11 @@
 package com.practicum.myapplication.screens
 
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -16,11 +17,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.practicum.myapplication.R
 import com.practicum.myapplication.model.SearchState
 import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
@@ -49,17 +52,21 @@ fun SearchScreen(
             contentAlignment = Alignment.CenterStart
         ) {
             IconButton(
-                onClick = onBackClick,
+                onClick = {
+                    viewModel.resetState()   // сброс состояния
+                    onBackClick()            // навигация назад
+                },
                 modifier = Modifier
                     .size(24.dp)
                     .align(Alignment.CenterStart)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
                     tint = Color.Black
                 )
             }
+
 
             Text(
                 text = "Поиск",
@@ -122,8 +129,7 @@ fun SearchScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-            }
-            ,
+            },
             trailingIcon = {
                 if (searchQuery.value.isNotEmpty()) {
                     IconButton(
@@ -162,26 +168,49 @@ fun SearchScreen(
             is SearchState.Success -> {
                 val tracks = (screenState as SearchState.Success).foundList
                 if (tracks.isEmpty()) {
+                    // Пустой результат
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 100.dp),
+                        contentAlignment = Alignment.TopCenter
                     ) {
-                        Text(
-                            text = "Треки не найдены",
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_music),
+                                contentDescription = "No tracks",
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .padding(bottom = 16.dp),
+                                tint = Color(0xFFD0D0D0)
+                            )
+                            Text(
+                                text = "Ничего не нашлось",
+                                fontSize = 16.sp,
+                                color = Color(0xFFD0D0D0),
+                                fontWeight = FontWeight.Normal
+                            )
+                        }
                     }
                 } else {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         items(tracks.size) { index ->
-                            SearchTrackItem(track = tracks[index])
-                            Divider(thickness = 0.5.dp, color = Color.LightGray)
+                            TrackListItem(track = tracks[index])
+                            if (index < tracks.size - 1) {
+                                HorizontalDivider(
+                                    thickness = 0.5.dp,
+                                    color = Color(0xFFE0E0E0),
+                                    modifier = Modifier.padding(vertical = 0.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -204,40 +233,54 @@ fun SearchScreen(
 }
 
 @Composable
-fun SearchTrackItem(track: Track) {
+fun TrackListItem(track: Track) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Иконка трека
+        Icon(
+            painter = painterResource(id = R.drawable.ic_music),
+            contentDescription = "Track",
+            modifier = Modifier.size(40.dp),
+            tint = Color.Black
+        )
+
+        // Информация о треке (название + артист + время)
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 12.dp),
+                .padding(0.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
                 text = track.trackName,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = Color.Black,
+                maxLines = 1
             )
             Text(
-                text = track.artistName,
+                text = "${track.artistName} · ${track.trackTime}",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = Color(0xFF999999),
+                maxLines = 1
             )
         }
 
+        // Символ стрелки
         Text(
-            text = track.trackTime,
-            fontSize = 14.sp,
-            color = Color.Gray
+            text = "❯",
+            fontSize = 20.sp,
+            color = Color(0xFFCCCCCC),
+            modifier = Modifier.padding(start = 8.dp)
         )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -247,4 +290,3 @@ fun SearchScreenPreview() {
         // либо вообще не вызывать SearchScreen с viewModel
     }
 }
-

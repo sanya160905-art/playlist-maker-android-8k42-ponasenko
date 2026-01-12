@@ -1,5 +1,5 @@
 package com.practicum.myapplication.data.dto
 
-open class BaseResponse() {
-    var resultCode = 0
-}
+open class BaseResponse(
+    var resultCode: Int = 0
+)

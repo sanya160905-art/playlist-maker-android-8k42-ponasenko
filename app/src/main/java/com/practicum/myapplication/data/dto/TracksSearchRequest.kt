@@ -1,3 +1,5 @@
 package com.practicum.myapplication.data.dto
 
-data class TracksSearchRequest(val expression: String)
+data class TracksSearchRequest(
+    val expression: String
+)

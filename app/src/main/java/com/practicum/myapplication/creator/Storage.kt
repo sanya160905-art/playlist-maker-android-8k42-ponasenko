@@ -53,15 +53,55 @@ class Storage {
             trackName = "Чёрный бумер",
             artistName = "Серега",
             trackTimeMillis = 241000
+        ),
+        TrackDto(
+            trackName = "Выхода нет",
+            artistName = "Сплин",
+            trackTimeMillis = 228000 // ~3:48
+        ),
+        TrackDto(
+            trackName = "Моё сердце",
+            artistName = "Сплин",
+            trackTimeMillis = 250000 // ~4:10
+        ),
+
+        TrackDto(
+            trackName = "Лирика",
+            artistName = "Сектор Газа",
+            trackTimeMillis = 260000 // ~4:20
+        ),
+        TrackDto(
+            trackName = "Туман",
+            artistName = "Сектор Газа",
+            trackTimeMillis = 240000 // ~4:00
+        ),
+
+        // kizaru (без жести)
+        TrackDto(
+            trackName = "Keep Straight",
+            artistName = "kizaru",
+            trackTimeMillis = 170000 // ~2:50
+        ),
+        TrackDto(
+            trackName = "Никто не нужен",
+            artistName = "kizaru",
+            trackTimeMillis = 190000 // ~3:10
+        ),
+
+
+        TrackDto(
+            trackName = "ОЙДА",
+            artistName = "Слава КПСС",
+            trackTimeMillis = 180000 // ~3:00
         )
     )
 
     fun search(request: String): List<TrackDto> {
         val result = listTracks.filter {
-            it.trackName
-                .lowercase()
-                .contains(request.lowercase())
+            it.trackName.lowercase().contains(request.lowercase()) ||
+                    it.artistName.lowercase().contains(request.lowercase())
         }
         return result
     }
+
 }

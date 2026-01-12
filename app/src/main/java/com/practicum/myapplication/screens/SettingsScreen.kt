@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -25,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practicum.myapplication.R
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.core.net.toUri
 
 @Composable
 fun SettingsScreen(
@@ -54,7 +55,7 @@ fun SettingsScreen(
                     .align(Alignment.CenterStart)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
                     tint = Color.Black
                 )
@@ -149,7 +150,7 @@ fun SettingsScreen(
                 .fillMaxWidth()
                 .clickable {
                     val url = context.getString(R.string.practicum_offer_url)
-                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
                     context.startActivity(browserIntent)
                 }
                 .padding(horizontal = 16.dp, vertical = 16.dp),
