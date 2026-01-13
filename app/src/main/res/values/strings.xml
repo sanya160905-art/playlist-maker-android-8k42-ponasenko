@@ -1,22 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Playlist maker</string>
+    <string name="app_name">Playlist Maker</string>
+
+    <!-- Main Menu Screen -->
+    <string name="main_menu_title">Playlist maker</string>
+    <string name="menu_search">Поиск</string>
+    <string name="menu_playlists">Плейлисты</string>
+    <string name="menu_favorites">Избранное</string>
+    <string name="menu_settings">Настройки</string>
+
+    <!-- Common -->
+    <string name="button_back">Back</string>
+    <string name="arrow_button">Arrow</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Поиск</string>
+    <string name="search_placeholder">Введите строку для поиска</string>
+    <string name="search_button">Search</string>
+    <string name="clear_button">Clear</string>
+    <string name="no_tracks_found">Треков не найдено</string>
+    <string name="search_error">Ошибка при поиске</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Настройки</string>
-    <string name="dark_theme">Темная тема</string>
+    <string name="dark_theme">Тёмная тема</string>
     <string name="share_app">Поделиться приложением</string>
-    <string name="write_to_support">Написать разработчикам</string>
-    <string name="user_agreement">Пользовательское соглашение</string>
+    <string name="write_to_support">Написать в поддержку</string>
+    <string name="user_agreement">Соглашение пользователя</string>
+    <string name="share_message">Поделитесь приложением Playlist Maker с друзьями!</string>
+    <string name="support_email">support@playlistmaker.com</string>
+    <string name="email_subject">Вопрос по приложению Playlist Maker</string>
+    <string name="email_body">Здравствуйте!\n\nУ меня возник вопрос:</string>
+    <string name="practicum_offer_url">https://practicum.yandex.ru</string>
 
-    <!-- Email -->
-    <string name="support_email">adf14@tpu.ru</string>
-    <string name="email_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
-    <string name="email_body">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <!-- Playlists Screen -->
+    <string name="playlists_title">Плейлисты</string>
+    <string name="playlists_empty">Экран плейлистов (заглушка)</string>
 
-    <!-- Links -->
-    <string name="practicum_offer_url">https://yandex.ru/legal/practicum_offer/ru/</string>
-
-    <!-- Share -->
-    <string name="share_message">Попробуй крутое приложение Playlist Maker!</string>
+    <!-- Favorites Screen -->
+    <string name="favorites_title">Избранное</string>
+    <string name="favorites_empty">Экран избранного (заглушка)</string>
 </resources>

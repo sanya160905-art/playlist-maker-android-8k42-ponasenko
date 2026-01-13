@@ -28,25 +28,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.practicum.myapplication.R
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
 
 @Composable
 fun MainMenuScreen(
-    onSearchClick: () -> Unit = {},
-    onPlaylistsClick: () -> Unit = {},
-    onFavoritesClick: () -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onSearchClick: () -> Unit,
+    onPlaylistsClick: () -> Unit,
+    onFavoritesClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF3772E7))
     ) {
-        // Синяя шапка с заголовком
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -54,14 +55,13 @@ fun MainMenuScreen(
                 .statusBarsPadding()
         ) {
             Text(
-                text = "Playlist maker",
+                text = stringResource(id = R.string.main_menu_title),
                 color = Color.White,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
         }
 
-        // Белый контейнер на всю ширину с закруглением только сверху
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,37 +72,30 @@ fun MainMenuScreen(
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column {
-                // Поиск
                 MenuItem(
                     icon = Icons.Default.Search,
-                    title = "Поиск",
+                    title = stringResource(id = R.string.menu_search),
                     onClick = onSearchClick
                 )
-
                 MenuDivider()
 
-                // Плейлисты
                 MenuItem(
                     icon = Icons.Default.List,
-                    title = "Плейлисты",
+                    title = stringResource(id = R.string.menu_playlists),
                     onClick = onPlaylistsClick
                 )
-
                 MenuDivider()
 
-                // Избранное
                 MenuItem(
                     icon = Icons.Default.Favorite,
-                    title = "Избранное",
+                    title = stringResource(id = R.string.menu_favorites),
                     onClick = onFavoritesClick
                 )
-
                 MenuDivider()
 
-                // Настройки
                 MenuItem(
                     icon = Icons.Default.Settings,
-                    title = "Настройки",
+                    title = stringResource(id = R.string.menu_settings),
                     onClick = onSettingsClick
                 )
             }
@@ -129,7 +122,6 @@ fun MenuItem(
             modifier = Modifier.size(24.dp),
             tint = Color.Black
         )
-
         Text(
             text = title,
             modifier = Modifier
@@ -138,10 +130,9 @@ fun MenuItem(
             fontSize = 16.sp,
             color = Color.Black
         )
-
         Icon(
             imageVector = Icons.Default.KeyboardArrowRight,
-            contentDescription = "Arrow",
+            contentDescription = stringResource(id = R.string.arrow_button),
             modifier = Modifier.size(24.dp),
             tint = Color.Gray
         )
@@ -161,6 +152,11 @@ fun MenuDivider() {
 @Composable
 fun MainMenuScreenPreview() {
     MyApplicationTheme {
-        MainMenuScreen()
+        MainMenuScreen(
+            onSearchClick = {},
+            onPlaylistsClick = {},
+            onFavoritesClick = {},
+            onSettingsClick = {}
+        )
     }
 }

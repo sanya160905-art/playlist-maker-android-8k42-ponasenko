@@ -3,7 +3,7 @@ enum class NavigationScreen {
     MAIN_MENU,
     SEARCH,
     SETTINGS,
-    // PLAYLISTS,
-    // FAVORITES,
-    // TRACK
+    PLAYLISTS,
+    FAVORITES,
+    //TRACK
 }

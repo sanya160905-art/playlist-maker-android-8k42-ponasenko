@@ -1,7 +1,8 @@
 package com.practicum.myapplication.screens
 
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.core.net.toUri
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,12 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practicum.myapplication.R
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.core.net.toUri
 
 @Composable
 fun SettingsScreen(
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit
 ) {
     val isDarkTheme = remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -39,7 +38,6 @@ fun SettingsScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Заголовок с кнопкой назад и текстом
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -56,9 +54,10 @@ fun SettingsScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(id = R.string.button_back),
                     tint = Color.Black
                 )
+
             }
 
             Text(
@@ -70,7 +69,7 @@ fun SettingsScreen(
             )
         }
 
-        // Темная тема (с Toggle Switch)
+        // Dark theme toggle
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,7 +83,6 @@ fun SettingsScreen(
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.weight(1f)
             )
-
             Switch(
                 checked = isDarkTheme.value,
                 onCheckedChange = { isDarkTheme.value = it },
@@ -98,20 +96,22 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // Поделиться приложением
+        // Share app
+        // Share app
+        val shareTitle = stringResource(id = R.string.share_app)
+        val shareMessage = stringResource(id = R.string.share_message)
+
         SettingsMenuItemWithIcon(
-            title = stringResource(id = R.string.share_app),
-            icon = Icons.Default.Share,
-            onClick = {
-                val shareMessage = context.getString(R.string.share_message)
-                val shareIntent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, shareMessage)
-                    type = "text/plain"
-                }
-                context.startActivity(Intent.createChooser(shareIntent, null))
+            title = shareTitle,
+            icon = Icons.Default.Share
+        ) {
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, shareMessage)
+                type = "text/plain"
             }
-        )
+            context.startActivity(Intent.createChooser(shareIntent, null))
+        }
 
         HorizontalDivider(
             modifier = Modifier.padding(start = 0.dp),
@@ -119,24 +119,24 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // Написать разработчикам
-        SettingsMenuItemWithIcon(
-            title = stringResource(id = R.string.write_to_support),
-            icon = Icons.Default.Email,
-            onClick = {
-                val supportEmail = context.getString(R.string.support_email)
-                val emailSubject = context.getString(R.string.email_subject)
-                val emailBody = context.getString(R.string.email_body)
+        // Write to support
+        val writeToSupportTitle = stringResource(id = R.string.write_to_support)
+        val supportEmail = stringResource(id = R.string.support_email)
+        val emailSubject = stringResource(id = R.string.email_subject)
+        val emailBody = stringResource(id = R.string.email_body)
 
-                val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                    data = Uri.parse("mailto:")
-                    putExtra(Intent.EXTRA_EMAIL, arrayOf(supportEmail))
-                    putExtra(Intent.EXTRA_SUBJECT, emailSubject)
-                    putExtra(Intent.EXTRA_TEXT, emailBody)
-                }
-                context.startActivity(emailIntent)
+        SettingsMenuItemWithIcon(
+            title = writeToSupportTitle,
+            icon = Icons.Default.Email
+        ) {
+            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                data = "mailto:".toUri()
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(supportEmail))
+                putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+                putExtra(Intent.EXTRA_TEXT, emailBody)
             }
-        )
+            context.startActivity(emailIntent)
+        }
 
         HorizontalDivider(
             modifier = Modifier.padding(start = 0.dp),
@@ -144,32 +144,34 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // Пользовательское соглашение
+        // User agreement
+        val userAgreementTitle = stringResource(id = R.string.user_agreement)
+        val offerUrl = stringResource(id = R.string.practicum_offer_url)
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    val url = context.getString(R.string.practicum_offer_url)
-                    val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+                    val browserIntent = Intent(Intent.ACTION_VIEW, offerUrl.toUri())
                     context.startActivity(browserIntent)
                 }
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(id = R.string.user_agreement),
+                text = userAgreementTitle,
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.weight(1f)
             )
-
             Text(
                 text = ">",
                 color = Color.Gray,
                 fontSize = 18.sp
             )
         }
+
     }
 }
 
@@ -182,7 +184,7 @@ fun SettingsMenuItemWithIcon(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -193,7 +195,6 @@ fun SettingsMenuItemWithIcon(
             fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(1f)
         )
-
         Icon(
             imageVector = icon,
             contentDescription = title,
@@ -207,6 +208,6 @@ fun SettingsMenuItemWithIcon(
 @Composable
 fun SettingsScreenPreview() {
     MyApplicationTheme {
-        SettingsScreen()
+        SettingsScreen(onBackClick = {})
     }
 }

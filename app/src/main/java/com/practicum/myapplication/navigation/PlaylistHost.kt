@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import com.practicum.myapplication.screens.MainMenuScreen
 import com.practicum.myapplication.screens.SearchScreen
 import com.practicum.myapplication.screens.SettingsScreen
+import com.practicum.myapplication.screens.PlaylistsScreen
+import com.practicum.myapplication.screens.FavoritesScreen
 import com.practicum.myapplication.viewmodel.SearchViewModel
 
 @Composable
@@ -23,8 +25,12 @@ fun PlaylistHost(
                 onSearchClick = {
                     navController.navigate(NavigationScreen.SEARCH.name)
                 },
-                onPlaylistsClick = { },
-                onFavoritesClick = { },
+                onPlaylistsClick = {
+                    navController.navigate(NavigationScreen.PLAYLISTS.name)
+                },
+                onFavoritesClick = {
+                    navController.navigate(NavigationScreen.FAVORITES.name)
+                },
                 onSettingsClick = {
                     navController.navigate(NavigationScreen.SETTINGS.name)
                 }
@@ -42,6 +48,18 @@ fun PlaylistHost(
 
         composable(NavigationScreen.SETTINGS.name) {
             SettingsScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(NavigationScreen.PLAYLISTS.name) {
+            PlaylistsScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(NavigationScreen.FAVORITES.name) {
+            FavoritesScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
