@@ -28,16 +28,16 @@
     <string name="write_to_support">Написать в поддержку</string>
     <string name="user_agreement">Соглашение пользователя</string>
     <string name="share_message">Поделитесь приложением Playlist Maker с друзьями!</string>
-    <string name="support_email">support@playlistmaker.com</string>
-    <string name="email_subject">Вопрос по приложению Playlist Maker</string>
-    <string name="email_body">Здравствуйте!\n\nУ меня возник вопрос:</string>
-    <string name="practicum_offer_url">https://practicum.yandex.ru</string>
+    <string name="support_email">adf14@tpu.ru</string>
+    <string name="email_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="email_body">Спасибо разработчикам и разработчицам за крутое приложение!:</string>
+    <string name="practicum_offer_url">https://yandex.ru/legal/practicum_offer/ru/</string>
 
     <!-- Playlists Screen -->
     <string name="playlists_title">Плейлисты</string>
-    <string name="playlists_empty">Экран плейлистов (заглушка)</string>
+    <string name="playlists_empty">Экран плейлистов</string>
 
     <!-- Favorites Screen -->
     <string name="favorites_title">Избранное</string>
-    <string name="favorites_empty">Экран избранного (заглушка)</string>
+    <string name="favorites_empty">Экран избранного</string>
 </resources>
