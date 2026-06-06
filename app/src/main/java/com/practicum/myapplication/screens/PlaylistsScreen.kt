@@ -1,80 +1,81 @@
 package com.practicum.myapplication.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.practicum.myapplication.R
-import com.practicum.myapplication.ui.theme.MyApplicationTheme
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaylistsScreen(
     onBackClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
+    // Стейт для отображения BottomSheet панели[cite: 2]
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Плейлисты") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Назад"
+                        )
+                    }
+                }
+            )
+        },
+        // Добавляем FloatingActionButton, как в практическом задании[cite: 2]
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { showBottomSheet = true }, // При нажатии открываем панель[cite: 2]
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Создать плейлист")
+            }
+        }
+    ) { innerPadding ->
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-                .statusBarsPadding()
-                .height(56.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            IconButton(
-                onClick = onBackClick,
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.CenterStart)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = stringResource(id = R.string.button_back),
-                    tint = Color.Black
-                )
-            }
-
-            Text(
-                text = stringResource(id = R.string.playlists_title),
-                color = Color.Black,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
+                .fillMaxSize()
+                .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = stringResource(id = R.string.playlists_empty),
-                color = Color.Gray,
-                fontSize = 16.sp
-            )
+            Text("Список плейлистов пуст")
         }
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun PlaylistsScreenPreview() {
-    MyApplicationTheme {
-        PlaylistsScreen(onBackClick = {})
+        // Вызываем ModalBottomSheet, если стейт true[cite: 2]
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false }, // Скрываем при тапе мимо[cite: 2]
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Тут в будущем будет создание нового плейлиста!",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = { showBottomSheet = false }) {
+                        Text("Закрыть")
+                    }
+                }
+            }
+        }
     }
 }
