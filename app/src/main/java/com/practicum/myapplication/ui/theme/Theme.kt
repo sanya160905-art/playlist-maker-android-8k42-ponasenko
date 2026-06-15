@@ -24,9 +24,8 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun MyApplicationTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean = false,        // ← было isSystemInDarkTheme()
+    dynamicColor: Boolean = false,     // ← было true
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

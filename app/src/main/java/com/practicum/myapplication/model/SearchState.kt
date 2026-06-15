@@ -5,4 +5,5 @@ sealed class SearchState {
     object Loading : SearchState()
     data class Success(val foundList: List<Track>) : SearchState()
     data class Error(val error: String) : SearchState()
+    data class History(val tracks: List<Track>) : SearchState()
 }

@@ -37,7 +37,7 @@ android {
     buildFeatures {
         compose = true
     }
-} // <-- Вот эта скобка у тебя потерялась!
+}
 
 dependencies {
     // Ядро и Lifecycle

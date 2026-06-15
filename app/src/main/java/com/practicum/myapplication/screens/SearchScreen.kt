@@ -1,47 +1,49 @@
 package com.practicum.myapplication.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practicum.myapplication.R
 import com.practicum.myapplication.model.SearchState
 import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
-import com.practicum.myapplication.viewmodel.SearchViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.focus.onFocusChanged
 
 @Composable
 fun SearchScreen(
+    viewModel: com.practicum.myapplication.viewmodel.SearchViewModel,
     onBackClick: () -> Unit,
-    viewModel: SearchViewModel
+    onTrackClick: (Track) -> Unit
 ) {
-    val searchQuery = remember { mutableStateOf("") }
-    val screenState by viewModel.searchScreenState.collectAsState()
+    val searchState by viewModel.searchScreenState.collectAsState()
+    var searchText by rememberSaveable { mutableStateOf("") }
+    var isFocused by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Top bar
+        // Top bar с кнопкой назад
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -57,8 +59,8 @@ fun SearchScreen(
                     .align(Alignment.CenterStart)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = stringResource(id = R.string.button_back),
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Назад",
                     tint = Color.Black
                 )
             }
@@ -71,17 +73,13 @@ fun SearchScreen(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-
+        val isHistory = searchState is SearchState.History
         // Search field
         OutlinedTextField(
-            value = searchQuery.value,
+            value = searchText,
             onValueChange = { newValue ->
-                searchQuery.value = newValue
-                if (newValue.isNotEmpty()) {
-                    viewModel.searchTracks(newValue)
-                } else {
-                    viewModel.searchTracks("")
-                }
+                searchText = newValue
+                viewModel.updateQuery(newValue)
             },
             placeholder = {
                 Text(
@@ -92,8 +90,20 @@ fun SearchScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            shape = RoundedCornerShape(8.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 0.dp)
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                    if (focusState.isFocused && searchText.isEmpty()) {
+                        viewModel.showHistoryIfExists()
+                    } else if (!focusState.isFocused && searchText.isEmpty()) {
+                        viewModel.resetState()
+                    }
+                },
+            shape = if (isHistory) {
+                RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp, bottomStart = 0.dp, bottomEnd = 0.dp)
+            } else {
+                RoundedCornerShape(8.dp)
+            },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color.Transparent,
                 focusedBorderColor = Color.Transparent,
@@ -108,24 +118,19 @@ fun SearchScreen(
                 fontSize = 16.sp
             ),
             leadingIcon = {
-                IconButton(
-                    onClick = { viewModel.searchTracks(searchQuery.value) },
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(id = R.string.search_button),
-                        tint = Color(0xFFBDBEC0),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(id = R.string.search_button),
+                    tint = Color(0xFFBDBEC0),
+                    modifier = Modifier.size(20.dp)
+                )
             },
             trailingIcon = {
-                if (searchQuery.value.isNotEmpty()) {
+                if (searchText.isNotEmpty()) {
                     IconButton(
                         onClick = {
-                            searchQuery.value = ""
-                            viewModel.searchTracks("")
+                            searchText = ""
+                            viewModel.updateQuery("")
                         },
                         modifier = Modifier.size(24.dp)
                     ) {
@@ -141,8 +146,8 @@ fun SearchScreen(
             singleLine = true
         )
 
-        // Content by state
-        when (val state = screenState) {
+        // Контент в зависимости от состояния
+        when (val state = searchState) {
             is SearchState.Initial -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -186,8 +191,50 @@ fun SearchScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(tracks.size) { index ->
-                            SearchTrackItem(track = tracks[index])
-                            Divider(thickness = 0.5.dp, color = Color.LightGray)
+                            SearchTrackItem(
+                                track = tracks[index],
+                                onClick = {
+                                    viewModel.onTrackClicked(tracks[index])
+                                    onTrackClick(tracks[index])
+                                }
+                            )
+                            HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                        }
+                    }
+                }
+            }
+
+            is SearchState.History -> {
+                Column(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                        .background(Color(0xFFE8E8E8), RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomStart = 12.dp,
+                            bottomEnd = 12.dp
+                        ))
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        thickness = 0.5.dp,
+                        color = Color(0xFFCCCCCC)
+                    )
+
+                    state.tracks.forEachIndexed { index, track ->
+                        HistoryTrackItem(
+                            track = track,
+                            onClick = {
+                                viewModel.onTrackClicked(track)
+                                onTrackClick(track)
+                            }
+                        )
+                        if (index < state.tracks.size - 1) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                thickness = 0.5.dp,
+                                color = Color(0xFFCCCCCC)
+                            )
                         }
                     }
                 }
@@ -209,11 +256,36 @@ fun SearchScreen(
     }
 }
 
+// Элемент истории — с иконкой часов
 @Composable
-fun SearchTrackItem(track: Track) {
+fun HistoryTrackItem(track: Track, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "🕐",
+            fontSize = 16.sp,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = track.trackName,
+            fontSize = 16.sp,
+            color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun SearchTrackItem(track: Track, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -247,6 +319,5 @@ fun SearchTrackItem(track: Track) {
 @Preview(showBackground = true)
 @Composable
 fun SearchScreenPreview() {
-    MyApplicationTheme {
-    }
+    MyApplicationTheme {}
 }
