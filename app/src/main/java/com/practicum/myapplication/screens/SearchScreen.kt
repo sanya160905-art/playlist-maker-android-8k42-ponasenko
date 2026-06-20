@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun SearchScreen(
@@ -241,15 +242,20 @@ fun SearchScreen(
             }
 
             is SearchState.Error -> {
-                Box(
+                Column(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = state.error ?: stringResource(id = R.string.search_error),
-                        color = Color.Red,
+                        text = "На сервере произошла ошибка",
+                        color = Color.Gray,
                         fontSize = 16.sp
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = { viewModel.retrySearch() }) {
+                        Text("Обновить")
+                    }
                 }
             }
         }
@@ -290,10 +296,19 @@ fun SearchTrackItem(track: Track, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        coil.compose.AsyncImage(
+            model = track.artworkUrl,
+            contentDescription = track.trackName,
+            placeholder = androidx.compose.ui.res.painterResource(id = R.drawable.ic_music),
+            error = androidx.compose.ui.res.painterResource(id = R.drawable.ic_music),
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(4.dp))
+        )
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 12.dp),
+                .padding(start = 12.dp, end = 12.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Text(

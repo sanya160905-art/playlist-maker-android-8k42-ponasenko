@@ -1,14 +1,39 @@
 package com.practicum.myapplication.data.network
 
-import com.practicum.myapplication.creator.Storage
 import com.practicum.myapplication.data.dto.BaseResponse
 import com.practicum.myapplication.data.dto.TracksSearchRequest
 import com.practicum.myapplication.data.dto.TracksSearchResponse
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitNetworkClient(private val storage: Storage) : NetworkClient {
+class RetrofitNetworkClient : NetworkClient {
 
-    override fun doRequest(dto: Any): BaseResponse {
-        val searchList = storage.search((dto as TracksSearchRequest).expression)
-        return TracksSearchResponse(searchList).apply { resultCode = 200 }
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://itunes.apple.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val iTunesService = retrofit.create(ITunesApiService::class.java)
+
+    override suspend fun doRequest(dto: Any): BaseResponse {
+        if (dto !is TracksSearchRequest) {
+            return BaseResponse().apply { resultCode = 400 }
+        }
+
+        return try {
+            val response = iTunesService.search(dto.expression)
+            if (response.isSuccessful) {
+                val body = response.body()
+                TracksSearchResponse(
+                    resultCode = response.code(),
+                    resultCount = body?.resultCount ?: 0,
+                    results = body?.results ?: emptyList()
+                )
+            } else {
+                BaseResponse().apply { resultCode = response.code() }
+            }
+        } catch (e: Exception) {
+            BaseResponse().apply { resultCode = -1 }
+        }
     }
 }

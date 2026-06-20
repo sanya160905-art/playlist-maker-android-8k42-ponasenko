@@ -7,5 +7,6 @@ enum class NavigationScreen {
     PLAYLISTS,
     FAVORITES,
     TRACK_DETAIL,
-    CREATE_PLAYLIST
+    CREATE_PLAYLIST,
+    PLAYLIST_DETAIL
 }

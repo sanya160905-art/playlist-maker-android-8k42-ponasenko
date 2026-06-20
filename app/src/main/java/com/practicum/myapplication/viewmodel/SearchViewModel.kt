@@ -9,6 +9,7 @@ import com.practicum.myapplication.creator.Creator
 import com.practicum.myapplication.domain.repository.SearchHistoryRepository
 import com.practicum.myapplication.domain.repository.TracksRepository
 import com.practicum.myapplication.model.SearchState
+import com.practicum.myapplication.model.Track
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,7 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
+    private var lastQuery: String = ""
 
     private val _searchScreenState = MutableStateFlow<SearchState>(SearchState.Initial)
     val searchScreenState: StateFlow<SearchState> = _searchScreenState.asStateFlow()
@@ -52,13 +54,21 @@ class SearchViewModel(
         showHistory()
     }
 
-    fun onTrackClicked(track: com.practicum.myapplication.model.Track) {
+    fun onTrackClicked(track: Track) {
         historyRepository.addToHistory(track)
     }
 
     fun clearHistory() {
         historyRepository.clearHistory()
         _searchScreenState.update { SearchState.Initial }
+    }
+
+    fun retrySearch() {
+        if (lastQuery.isNotEmpty()) {
+            viewModelScope.launch {
+                performSearch(lastQuery)
+            }
+        }
     }
 
     private fun showHistory() {
@@ -71,12 +81,13 @@ class SearchViewModel(
     }
 
     private suspend fun performSearch(query: String) {
-        try {
-            _searchScreenState.update { SearchState.Loading }
-            val results = tracksRepository.searchTracks(query)
-            _searchScreenState.update { SearchState.Success(foundList = results) }
-        } catch (e: Exception) {
-            _searchScreenState.update { SearchState.Error(e.message.toString()) }
+        lastQuery = query
+        _searchScreenState.update { SearchState.Loading }
+        val result = tracksRepository.searchTracks(query)
+        result.onSuccess { tracks ->
+            _searchScreenState.update { SearchState.Success(foundList = tracks) }
+        }.onFailure { error ->
+            _searchScreenState.update { SearchState.Error(error.message ?: "Unknown error") }
         }
     }
 

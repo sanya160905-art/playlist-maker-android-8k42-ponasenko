@@ -63,6 +63,11 @@ dependencies {
     // Асинхронная загрузка картинок (Coil)
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    // Сеть — Retrofit + Gson
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.gson)
+    implementation(libs.gson)
+
     // Тестирование
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
