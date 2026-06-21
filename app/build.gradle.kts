@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -68,6 +69,14 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.gson)
 
+    // База данных — Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+// Хранение настроек — DataStore
+    implementation(libs.datastore.preferences)
+
     // Тестирование
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -77,3 +86,4 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+

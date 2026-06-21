@@ -97,15 +97,20 @@ fun PlaylistHost(
                 }
             )
         }
-
         composable(NavigationScreen.FAVORITES.name) {
-            FavoritesScreen(onBackClick = { navController.popBackStack() })
+            FavoritesScreen(
+                onBackClick = { navController.popBackStack() },
+                onTrackClick = { track ->
+                    selectedTrack = track
+                    navController.navigate(NavigationScreen.TRACK_DETAIL.name)
+                }
+            )
         }
 
         composable(NavigationScreen.CREATE_PLAYLIST.name) {
             CreatePlaylistScreen(
                 onBackClick = { navController.popBackStack() },
-                onPlaylistCreated = { name, description ->
+                onPlaylistCreated = {
                     navController.popBackStack()
                 }
             )

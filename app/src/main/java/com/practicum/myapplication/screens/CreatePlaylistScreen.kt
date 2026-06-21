@@ -13,14 +13,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.practicum.myapplication.creator.Creator
+import kotlinx.coroutines.launch
 
 @Composable
 fun CreatePlaylistScreen(
     onBackClick: () -> Unit,
-    onPlaylistCreated: (name: String, description: String) -> Unit
+    onPlaylistCreated: () -> Unit
 ) {
     var playlistName by remember { mutableStateOf("") }
     var playlistDescription by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val playlistsRepository = remember { Creator.getPlaylistsRepository() }
 
     Column(
         modifier = Modifier
@@ -64,7 +68,6 @@ fun CreatePlaylistScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Обложка-заглушка
             Box(
                 modifier = Modifier
                     .size(240.dp)
@@ -77,7 +80,6 @@ fun CreatePlaylistScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Поле названия
             OutlinedTextField(
                 value = playlistName,
                 onValueChange = { playlistName = it },
@@ -94,7 +96,6 @@ fun CreatePlaylistScreen(
                 singleLine = true
             )
 
-            // Поле описания
             OutlinedTextField(
                 value = playlistDescription,
                 onValueChange = { playlistDescription = it },
@@ -115,11 +116,13 @@ fun CreatePlaylistScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Кнопка создать
             Button(
                 onClick = {
                     if (playlistName.isNotBlank()) {
-                        onPlaylistCreated(playlistName, playlistDescription)
+                        coroutineScope.launch {
+                            playlistsRepository.addNewPlaylist(playlistName, playlistDescription)
+                            onPlaylistCreated()
+                        }
                     }
                 },
                 enabled = playlistName.isNotBlank(),

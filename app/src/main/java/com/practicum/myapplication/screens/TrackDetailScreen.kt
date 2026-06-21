@@ -1,7 +1,9 @@
 package com.practicum.myapplication.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -15,7 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.practicum.myapplication.creator.Creator
 import com.practicum.myapplication.model.Track
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +27,16 @@ fun TrackDetailScreen(
     track: Track,
     onBackClick: () -> Unit
 ) {
-    var isFavorite by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val tracksRepository = remember { Creator.getTracksRepository() }
+    val playlistsRepository = remember { Creator.getPlaylistsRepository() }
+
+
+    val trackFromDb by tracksRepository.getTrackByNameAndArtist(track).collectAsState(initial = null)
+    val isFavorite = trackFromDb?.isFavorite ?: false
+
+    val playlists by playlistsRepository.getAllPlaylists().collectAsState(initial = emptyList())
+
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
@@ -63,14 +76,12 @@ fun TrackDetailScreen(
             )
         }
 
-        // Информация о треке
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Обложка-заглушка
             Box(
                 modifier = Modifier
                     .size(240.dp)
@@ -107,7 +118,6 @@ fun TrackDetailScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Кнопки действий
             Row(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -115,7 +125,11 @@ fun TrackDetailScreen(
                 // Кнопка "В избранное"
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     IconButton(
-                        onClick = { isFavorite = !isFavorite },
+                        onClick = {
+                            coroutineScope.launch {
+                                tracksRepository.updateTrackFavoriteStatus(track, !isFavorite)
+                            }
+                        },
                         modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
@@ -131,7 +145,7 @@ fun TrackDetailScreen(
                 // Кнопка "Добавить в плейлист"
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     IconButton(
-                        onClick = { showBottomSheet = true },  // ← теперь открывает Bottom Sheet
+                        onClick = { showBottomSheet = true },
                         modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
@@ -147,7 +161,6 @@ fun TrackDetailScreen(
         }
     }
 
-    // Bottom Sheet для выбора плейлиста
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
@@ -172,16 +185,47 @@ fun TrackDetailScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Заглушка — плейлистов пока нет
-                Text(
-                    text = "Плейлистов пока нет",
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
+                if (playlists.isEmpty()) {
+                    Text(
+                        text = "Плейлистов пока нет",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.heightIn(max = 240.dp)
+                    ) {
+                        items(playlists.size) { index ->
+                            val playlist = playlists[index]
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        coroutineScope.launch {
+                                            tracksRepository.insertTrackToPlaylist(track, playlist.id)
+                                            showBottomSheet = false
+                                        }
+                                    }
+                                    .padding(vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = "🎵", fontSize = 20.sp)
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(text = playlist.name, fontSize = 16.sp, color = Color.Black)
+                                    Text(
+                                        text = "${playlist.tracks.size} треков",
+                                        fontSize = 13.sp,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Кнопка создать новый плейлист
                 Button(
                     onClick = { showBottomSheet = false },
                     colors = ButtonDefaults.buttonColors(
@@ -195,7 +239,7 @@ fun TrackDetailScreen(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Создать плейлист")
+                    Text(text = "Закрыть")
                 }
             }
         }

@@ -29,7 +29,8 @@ fun PlaylistsScreen(
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
-    val playlists = remember { Creator.getDatabase().getAllPlaylists() }
+    val playlistsRepository = remember { Creator.getPlaylistsRepository() }
+    val playlists by playlistsRepository.getAllPlaylists().collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {

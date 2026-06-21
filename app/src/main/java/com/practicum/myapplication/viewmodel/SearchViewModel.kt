@@ -51,16 +51,22 @@ class SearchViewModel(
     }
 
     fun showHistoryIfExists() {
-        showHistory()
+        viewModelScope.launch {
+            showHistory()
+        }
     }
 
     fun onTrackClicked(track: Track) {
-        historyRepository.addToHistory(track)
+        viewModelScope.launch {
+            historyRepository.addToHistory(track)
+        }
     }
 
     fun clearHistory() {
-        historyRepository.clearHistory()
-        _searchScreenState.update { SearchState.Initial }
+        viewModelScope.launch {
+            historyRepository.clearHistory()
+            _searchScreenState.update { SearchState.Initial }
+        }
     }
 
     fun retrySearch() {
@@ -71,7 +77,7 @@ class SearchViewModel(
         }
     }
 
-    private fun showHistory() {
+    private suspend fun showHistory() {
         val history = historyRepository.getHistory()
         if (history.isEmpty()) {
             _searchScreenState.update { SearchState.Initial }

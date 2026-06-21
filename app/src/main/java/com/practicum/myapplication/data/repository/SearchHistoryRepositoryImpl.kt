@@ -1,22 +1,22 @@
 package com.practicum.myapplication.data.repository
 
-import com.practicum.myapplication.creator.DatabaseMock
+import com.practicum.myapplication.data.preferences.SearchHistoryPreferences
 import com.practicum.myapplication.domain.repository.SearchHistoryRepository
 import com.practicum.myapplication.model.Track
 
 class SearchHistoryRepositoryImpl(
-    private val database: DatabaseMock
+    private val preferences: SearchHistoryPreferences
 ) : SearchHistoryRepository {
 
-    override fun getHistory(): List<Track> {
-        return database.getSearchHistory()
+    override suspend fun getHistory(): List<Track> {
+        return preferences.getEntries()
     }
 
-    override fun addToHistory(track: Track) {
-        database.addToSearchHistory(track)
+    override suspend fun addToHistory(track: Track) {
+        preferences.addEntry(track)
     }
 
-    override fun clearHistory() {
-        database.clearSearchHistory()
+    override suspend fun clearHistory() {
+        preferences.clearHistory()
     }
 }

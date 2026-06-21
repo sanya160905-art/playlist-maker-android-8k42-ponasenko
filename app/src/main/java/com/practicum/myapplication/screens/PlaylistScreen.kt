@@ -20,6 +20,7 @@ import coil.compose.AsyncImage
 import com.practicum.myapplication.R
 import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.viewmodel.PlaylistViewModel
+import androidx.compose.foundation.clickable
 
 @Composable
 fun PlaylistScreen(
@@ -146,6 +147,7 @@ fun PlaylistTrackItem(track: Track, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
