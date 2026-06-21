@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navOptions
 import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.screens.MainMenuScreen
 import com.practicum.myapplication.screens.SearchScreen
@@ -19,6 +20,20 @@ import com.practicum.myapplication.screens.TrackDetailScreen
 import com.practicum.myapplication.screens.CreatePlaylistScreen
 import com.practicum.myapplication.viewmodel.SearchViewModel
 import com.practicum.myapplication.viewmodel.PlaylistViewModel
+
+private fun safePopBackStack(navController: NavHostController) {
+    if (navController.previousBackStackEntry != null) {
+        navController.popBackStack()
+    }
+}
+
+// launchSingleTop = true гарантирует, что повторный быстрый клик
+// не создаст дублирующую запись в стеке навигации
+private fun safeNavigate(navController: NavHostController, route: String) {
+    navController.navigate(route) {
+        launchSingleTop = true
+    }
+}
 
 @Composable
 fun PlaylistHost(
@@ -33,10 +48,10 @@ fun PlaylistHost(
     ) {
         composable(NavigationScreen.MAIN_MENU.name) {
             MainMenuScreen(
-                onSearchClick = { navController.navigate(NavigationScreen.SEARCH.name) },
-                onPlaylistsClick = { navController.navigate(NavigationScreen.PLAYLISTS.name) },
-                onFavoritesClick = { navController.navigate(NavigationScreen.FAVORITES.name) },
-                onSettingsClick = { navController.navigate(NavigationScreen.SETTINGS.name) }
+                onSearchClick = { safeNavigate(navController, NavigationScreen.SEARCH.name) },
+                onPlaylistsClick = { safeNavigate(navController, NavigationScreen.PLAYLISTS.name) },
+                onFavoritesClick = { safeNavigate(navController, NavigationScreen.FAVORITES.name) },
+                onSettingsClick = { safeNavigate(navController, NavigationScreen.SETTINGS.name) }
             )
         }
 
@@ -44,10 +59,10 @@ fun PlaylistHost(
             if (searchViewModel != null) {
                 SearchScreen(
                     viewModel = searchViewModel,
-                    onBackClick = { navController.popBackStack() },
+                    onBackClick = { safePopBackStack(navController) },
                     onTrackClick = { track ->
                         selectedTrack = track
-                        navController.navigate(NavigationScreen.TRACK_DETAIL.name)
+                        safeNavigate(navController, NavigationScreen.TRACK_DETAIL.name)
                     }
                 )
             }
@@ -57,23 +72,23 @@ fun PlaylistHost(
             selectedTrack?.let { track ->
                 TrackDetailScreen(
                     track = track,
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { safePopBackStack(navController) }
                 )
             }
         }
 
         composable(NavigationScreen.SETTINGS.name) {
-            SettingsScreen(onBackClick = { navController.popBackStack() })
+            SettingsScreen(onBackClick = { safePopBackStack(navController) })
         }
 
         composable(NavigationScreen.PLAYLISTS.name) {
             PlaylistsScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { safePopBackStack(navController) },
                 onCreatePlaylistClick = {
-                    navController.navigate(NavigationScreen.CREATE_PLAYLIST.name)
+                    safeNavigate(navController, NavigationScreen.CREATE_PLAYLIST.name)
                 },
                 onPlaylistClick = { playlistId ->
-                    navController.navigate("${NavigationScreen.PLAYLIST_DETAIL.name}/$playlistId")
+                    safeNavigate(navController, "${NavigationScreen.PLAYLIST_DETAIL.name}/$playlistId")
                 }
             )
         }
@@ -90,28 +105,28 @@ fun PlaylistHost(
             )
             PlaylistScreen(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { safePopBackStack(navController) },
                 onTrackClick = { track ->
                     selectedTrack = track
-                    navController.navigate(NavigationScreen.TRACK_DETAIL.name)
+                    safeNavigate(navController, NavigationScreen.TRACK_DETAIL.name)
                 }
             )
         }
         composable(NavigationScreen.FAVORITES.name) {
             FavoritesScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { safePopBackStack(navController) },
                 onTrackClick = { track ->
                     selectedTrack = track
-                    navController.navigate(NavigationScreen.TRACK_DETAIL.name)
+                    safeNavigate(navController, NavigationScreen.TRACK_DETAIL.name)
                 }
             )
         }
 
         composable(NavigationScreen.CREATE_PLAYLIST.name) {
             CreatePlaylistScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { safePopBackStack(navController) },
                 onPlaylistCreated = {
-                    navController.popBackStack()
+                    safePopBackStack(navController)
                 }
             )
         }

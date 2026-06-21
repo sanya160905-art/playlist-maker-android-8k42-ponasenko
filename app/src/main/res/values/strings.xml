@@ -39,5 +39,5 @@
 
     <!-- Favorites Screen -->
     <string name="favorites_title">Избранное</string>
-    <string name="favorites_empty">Экран избранного</string>
+    <string name="favorites_empty">Ваша медиатека пуста</string>
 </resources>

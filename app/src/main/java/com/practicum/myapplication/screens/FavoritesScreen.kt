@@ -26,6 +26,7 @@ import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.Image
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -73,13 +74,20 @@ fun FavoritesScreen(
         }
 
         if (favoriteTracks.isEmpty()) {
-            Box(
+            Column(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_empty_media),
+                    contentDescription = stringResource(id = R.string.favorites_empty),
+                    modifier = Modifier.size(120.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(id = R.string.favorites_empty),
-                    color = Color.Gray,
+                    color = Color.Black,
                     fontSize = 16.sp
                 )
             }

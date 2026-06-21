@@ -21,6 +21,7 @@ import com.practicum.myapplication.creator.Creator
 import com.practicum.myapplication.model.Playlist
 import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
+import com.practicum.myapplication.utils.trackCountText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,7 +151,7 @@ fun PlaylistListItem(playlist: Playlist, onClick: () -> Unit) {
                 color = Color.Black
             )
             Text(
-                text = "${playlist.tracks.size} треков",
+                text = trackCountText(playlist.tracks.size),
                 fontSize = 14.sp,
                 color = Color.Gray
             )

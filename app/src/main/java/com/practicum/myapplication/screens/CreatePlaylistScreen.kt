@@ -27,6 +27,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun CreatePlaylistScreen(
@@ -38,12 +41,26 @@ fun CreatePlaylistScreen(
     var coverImageUri by remember { mutableStateOf<Uri?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val playlistsRepository = remember { Creator.getPlaylistsRepository() }
-
+    val context = LocalContext.current
     // Launcher для выбора изображения из галереи
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let { coverImageUri = it }
+        uri?.let {
+            try {
+                // Сохраняем долгосрочный доступ к файлу, чтобы URI оставался
+                // валидным после перезапуска приложения
+                context.contentResolver.takePersistableUriPermission(
+                    it,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            } catch (e: SecurityException) {
+                // Некоторые провайдеры (например, временные share-провайдеры)
+                // не поддерживают персистентные разрешения — это нормально,
+                // просто URI может не пережить перезапуск
+            }
+            coverImageUri = it
+        }
     }
 
     // Launcher для запроса разрешения (только для Android 12 и ниже)
@@ -54,7 +71,7 @@ fun CreatePlaylistScreen(
             imagePickerLauncher.launch("image/*")
         }
     }
-    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -131,7 +148,11 @@ fun CreatePlaylistScreen(
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Text(text = "🎵", fontSize = 64.sp)
+                    Image(
+                        painter = painterResource(id = com.practicum.myapplication.R.drawable.ic_add_image_placeholder),
+                        contentDescription = "Добавить обложку",
+                        modifier = Modifier.size(64.dp)
+                    )
                 }
             }
 

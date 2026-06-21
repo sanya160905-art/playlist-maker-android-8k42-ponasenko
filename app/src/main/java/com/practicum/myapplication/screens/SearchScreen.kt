@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.Image
 
 @Composable
 fun SearchScreen(
@@ -174,14 +175,21 @@ fun SearchScreen(
             is SearchState.Success -> {
                 val tracks = state.foundList
                 if (tracks.isEmpty()) {
-                    Box(
+                    Column(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Image(
+                            painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_nothing_found),
+                            contentDescription = stringResource(id = R.string.no_tracks_found),
+                            modifier = Modifier.size(120.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = stringResource(id = R.string.no_tracks_found),
                             fontSize = 16.sp,
-                            color = Color.Gray
+                            color = Color.Black
                         )
                     }
                 } else {
@@ -222,7 +230,7 @@ fun SearchScreen(
                         color = Color(0xFFCCCCCC)
                     )
 
-                    state.tracks.forEachIndexed { index, track ->
+                    state.tracks.forEach { track ->
                         HistoryTrackItem(
                             track = track,
                             onClick = {
@@ -230,13 +238,6 @@ fun SearchScreen(
                                 onTrackClick(track)
                             }
                         )
-                        if (index < state.tracks.size - 1) {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                thickness = 0.5.dp,
-                                color = Color(0xFFCCCCCC)
-                            )
-                        }
                     }
                 }
             }
@@ -247,15 +248,26 @@ fun SearchScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "На сервере произошла ошибка",
-                        color = Color.Gray,
-                        fontSize = 16.sp
+                    Image(
+                        painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_no_internet),
+                        contentDescription = "Нет подключения",
+                        modifier = Modifier.size(120.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { viewModel.retrySearch() }) {
-                        Text("Обновить")
-                    }
+                    Text(
+                        text = "Проблемы со связью",
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Загрузка не удалась. Проверьте подключение к интернету",
+                        color = Color.Gray,
+                        fontSize = 14.sp,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 32.dp)
+                    )
                 }
             }
         }

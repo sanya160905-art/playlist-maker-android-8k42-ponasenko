@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
@@ -27,7 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -80,14 +80,14 @@ fun MainMenuScreen(
                 MenuDivider()
 
                 MenuItem(
-                    icon = Icons.Default.List,
+                    iconPainter = painterResource(id = R.drawable.ic_playlists_custom),
                     title = stringResource(id = R.string.menu_playlists),
                     onClick = onPlaylistsClick
                 )
                 MenuDivider()
 
                 MenuItem(
-                    icon = Icons.Default.Favorite,
+                    iconPainter = painterResource(id = R.drawable.ic_favorites_custom),
                     title = stringResource(id = R.string.menu_favorites),
                     onClick = onFavoritesClick
                 )
@@ -103,9 +103,51 @@ fun MainMenuScreen(
     }
 }
 
+// Версия с ImageVector (для системных иконок)
 @Composable
 fun MenuItem(
     icon: ImageVector,
+    title: String,
+    onClick: () -> Unit
+) {
+    MenuItemContent(
+        iconContent = {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                modifier = Modifier.size(24.dp),
+                tint = Color.Black
+            )
+        },
+        title = title,
+        onClick = onClick
+    )
+}
+
+// Версия с Painter (для кастомных PNG-иконок из Figma)
+@Composable
+fun MenuItem(
+    iconPainter: Painter,
+    title: String,
+    onClick: () -> Unit
+) {
+    MenuItemContent(
+        iconContent = {
+            Icon(
+                painter = iconPainter,
+                contentDescription = title,
+                modifier = Modifier.size(24.dp),
+                tint = Color.Unspecified
+            )
+        },
+        title = title,
+        onClick = onClick
+    )
+}
+
+@Composable
+private fun MenuItemContent(
+    iconContent: @Composable () -> Unit,
     title: String,
     onClick: () -> Unit
 ) {
@@ -116,12 +158,7 @@ fun MenuItem(
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = title,
-            modifier = Modifier.size(24.dp),
-            tint = Color.Black
-        )
+        iconContent()
         Text(
             text = title,
             modifier = Modifier
