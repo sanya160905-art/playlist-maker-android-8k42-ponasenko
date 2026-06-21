@@ -1,6 +1,8 @@
 package com.practicum.myapplication.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,16 +14,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.practicum.myapplication.R
+import com.practicum.myapplication.creator.Creator
 import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.viewmodel.PlaylistViewModel
-import androidx.compose.foundation.clickable
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlaylistScreen(
     viewModel: PlaylistViewModel,
@@ -29,6 +34,8 @@ fun PlaylistScreen(
     onTrackClick: (Track) -> Unit
 ) {
     val playlist by viewModel.playlist.collectAsState(initial = null)
+    val tracksRepository = remember { Creator.getTracksRepository() }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -85,7 +92,16 @@ fun PlaylistScreen(
                     .background(Color(0xFFE8E8E8)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "🎵", fontSize = 56.sp)
+                if (currentPlaylist.coverImageUri != null) {
+                    AsyncImage(
+                        model = currentPlaylist.coverImageUri,
+                        contentDescription = currentPlaylist.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(text = "🎵", fontSize = 56.sp)
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -132,7 +148,12 @@ fun PlaylistScreen(
                         val track = currentPlaylist.tracks[index]
                         PlaylistTrackItem(
                             track = track,
-                            onClick = { onTrackClick(track) }
+                            onClick = { onTrackClick(track) },
+                            onLongClick = {
+                                coroutineScope.launch {
+                                    tracksRepository.deleteTrackFromPlaylist(track, currentPlaylist.id)
+                                }
+                            }
                         )
                         HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
                     }
@@ -142,12 +163,20 @@ fun PlaylistScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PlaylistTrackItem(track: Track, onClick: () -> Unit) {
+fun PlaylistTrackItem(
+    track: Track,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -1,6 +1,10 @@
 package com.practicum.myapplication.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -9,12 +13,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.practicum.myapplication.creator.Creator
 import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.content.ContextCompat
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun CreatePlaylistScreen(
@@ -23,9 +35,26 @@ fun CreatePlaylistScreen(
 ) {
     var playlistName by remember { mutableStateOf("") }
     var playlistDescription by remember { mutableStateOf("") }
+    var coverImageUri by remember { mutableStateOf<Uri?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val playlistsRepository = remember { Creator.getPlaylistsRepository() }
 
+    // Launcher для выбора изображения из галереи
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { coverImageUri = it }
+    }
+
+    // Launcher для запроса разрешения (только для Android 12 и ниже)
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            imagePickerLauncher.launch("image/*")
+        }
+    }
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,14 +97,42 @@ fun CreatePlaylistScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Обложка — нажми чтобы выбрать из галереи
             Box(
                 modifier = Modifier
                     .size(240.dp)
                     .align(Alignment.CenterHorizontally)
-                    .background(Color(0xFFE8E8E8), RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFE8E8E8))
+                    .clickable {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            imagePickerLauncher.launch("image/*")
+                        } else {
+                            when {
+                                ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                    imagePickerLauncher.launch("image/*")
+                                }
+                                else -> {
+                                    permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                }
+                            }
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "🎵", fontSize = 64.sp)
+                if (coverImageUri != null) {
+                    AsyncImage(
+                        model = coverImageUri,
+                        contentDescription = "Обложка плейлиста",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(text = "🎵", fontSize = 64.sp)
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -120,7 +177,11 @@ fun CreatePlaylistScreen(
                 onClick = {
                     if (playlistName.isNotBlank()) {
                         coroutineScope.launch {
-                            playlistsRepository.addNewPlaylist(playlistName, playlistDescription)
+                            playlistsRepository.addNewPlaylist(
+                                playlistName,
+                                playlistDescription,
+                                coverImageUri?.toString()
+                            )
                             onPlaylistCreated()
                         }
                     }

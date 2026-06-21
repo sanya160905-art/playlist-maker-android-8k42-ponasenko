@@ -1,7 +1,8 @@
 package com.practicum.myapplication.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,7 +25,9 @@ import com.practicum.myapplication.creator.Creator
 import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FavoritesScreen(
     onBackClick: () -> Unit,
@@ -32,6 +35,7 @@ fun FavoritesScreen(
 ) {
     val tracksRepository = remember { Creator.getTracksRepository() }
     val favoriteTracks by tracksRepository.getFavoriteTracks().collectAsState(initial = emptyList())
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -91,7 +95,14 @@ fun FavoritesScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onTrackClick(track) }
+                            .combinedClickable(
+                                onClick = { onTrackClick(track) },
+                                onLongClick = {
+                                    coroutineScope.launch {
+                                        tracksRepository.updateTrackFavoriteStatus(track, false)
+                                    }
+                                }
+                            )
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

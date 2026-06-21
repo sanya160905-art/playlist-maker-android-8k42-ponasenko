@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practicum.myapplication.creator.Creator
 import com.practicum.myapplication.model.Playlist
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,7 +127,16 @@ fun PlaylistListItem(playlist: Playlist, onClick: () -> Unit) {
                 .background(Color(0xFFE8E8E8)),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "🎵", fontSize = 24.sp)
+            if (playlist.coverImageUri != null) {
+                AsyncImage(
+                    model = playlist.coverImageUri,
+                    contentDescription = playlist.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(text = "🎵", fontSize = 24.sp)
+            }
         }
         Column(
             modifier = Modifier
