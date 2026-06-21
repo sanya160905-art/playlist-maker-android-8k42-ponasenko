@@ -289,9 +289,9 @@ fun HistoryQueryItem(query: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "🕐",
-            fontSize = 16.sp,
+        Image(
+            painter = painterResource(id = R.drawable.ic_history_clock),
+            contentDescription = null,
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
