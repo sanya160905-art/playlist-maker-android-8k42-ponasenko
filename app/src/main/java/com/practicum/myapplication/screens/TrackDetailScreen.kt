@@ -51,7 +51,6 @@ fun TrackDetailScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Top bar — только стрелка назад
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -114,7 +113,6 @@ fun TrackDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Круглые кнопки: плейлист слева, избранное справа
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -155,7 +153,6 @@ fun TrackDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Длительность
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween

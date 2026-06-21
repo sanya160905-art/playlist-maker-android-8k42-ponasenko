@@ -108,7 +108,6 @@ fun CreatePlaylistScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Обложка — нажми чтобы выбрать из галереи
             Box(
                 modifier = Modifier
                     .size(240.dp)

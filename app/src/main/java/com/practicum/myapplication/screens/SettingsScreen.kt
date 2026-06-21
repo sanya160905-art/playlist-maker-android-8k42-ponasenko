@@ -104,7 +104,6 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // Share app
         val shareTitle = stringResource(id = R.string.share_app)
         val shareMessage = stringResource(id = R.string.share_message)
 
@@ -126,7 +125,6 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // Write to support
         val writeToSupportTitle = stringResource(id = R.string.write_to_support)
         val supportEmail = stringResource(id = R.string.support_email)
         val emailSubject = stringResource(id = R.string.email_subject)
@@ -151,7 +149,6 @@ fun SettingsScreen(
             thickness = 1.dp
         )
 
-        // User agreement
         val userAgreementTitle = stringResource(id = R.string.user_agreement)
         val offerUrl = stringResource(id = R.string.practicum_offer_url)
 

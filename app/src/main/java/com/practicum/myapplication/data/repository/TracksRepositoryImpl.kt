@@ -53,7 +53,6 @@ class TracksRepositoryImpl(
     override suspend fun insertTrackToPlaylist(track: Track, playlistId: Long) {
         val existing = dao.findTrackByNameAndArtistOnce(track.trackName, track.artistName)
         if (existing != null) {
-            // Уже есть запись этого трека — просто обновляем playlistId
             dao.setPlaylistId(existing.id, playlistId)
         } else {
             dao.insertTrack(track.toEntity(playlistId = playlistId))
@@ -67,7 +66,6 @@ class TracksRepositoryImpl(
     override suspend fun updateTrackFavoriteStatus(track: Track, isFavorite: Boolean) {
         val existing = dao.findTrackByNameAndArtistOnce(track.trackName, track.artistName)
         if (existing != null) {
-            // Запись уже есть (например, в плейлисте) — просто меняем флаг избранного
             dao.updateFavoriteStatus(track.trackName, track.artistName, isFavorite)
         } else {
             dao.insertTrack(track.toEntity(isFavorite = isFavorite))

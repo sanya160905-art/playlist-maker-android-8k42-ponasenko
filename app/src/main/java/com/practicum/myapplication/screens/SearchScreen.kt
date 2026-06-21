@@ -151,7 +151,6 @@ fun SearchScreen(
             singleLine = true
         )
 
-        // Контент в зависимости от состояния
         when (val state = searchState) {
             is SearchState.Initial -> {
                 Box(

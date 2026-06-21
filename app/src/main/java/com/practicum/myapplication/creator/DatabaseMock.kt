@@ -5,10 +5,8 @@ import com.practicum.myapplication.model.Track
 
 class DatabaseMock {
 
-    // История поиска — максимум 5 последних треков
     private val searchHistory = mutableListOf<Track>()
 
-    // Моковые плейлисты для проверки экрана плейлиста
     private val playlists = mutableListOf(
         Playlist(
             id = 1L,

@@ -1,7 +1,6 @@
 package com.practicum.myapplication.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -20,7 +19,6 @@ import com.practicum.myapplication.screens.CreatePlaylistScreen
 import com.practicum.myapplication.viewmodel.SearchViewModel
 import com.practicum.myapplication.viewmodel.PlaylistViewModel
 
-// Защита от кликов во время анимации перехода между экранами
 private object NavigationGuard {
     private var lastNavigationTime = 0L
     private const val COOLDOWN_MS = 400L
@@ -43,8 +41,6 @@ private fun safePopBackStack(navController: NavHostController) {
     }
 }
 
-// launchSingleTop = true гарантирует, что повторный быстрый клик
-// не создаст дублирующую запись в стеке навигации
 private fun safeNavigate(navController: NavHostController, route: String) {
     if (!NavigationGuard.canNavigate()) return
     navController.navigate(route) {

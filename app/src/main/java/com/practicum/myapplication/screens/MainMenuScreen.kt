@@ -113,7 +113,6 @@ fun MainMenuScreen(
     }
 }
 
-// Версия с ImageVector (для системных иконок)
 @Composable
 fun MenuItem(
     icon: ImageVector,
@@ -134,7 +133,6 @@ fun MenuItem(
     )
 }
 
-// Версия с Painter (для кастомных PNG-иконок из Figma)
 @Composable
 fun MenuItem(
     iconPainter: Painter,

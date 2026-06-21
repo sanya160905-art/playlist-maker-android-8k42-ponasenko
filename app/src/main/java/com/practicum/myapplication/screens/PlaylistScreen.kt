@@ -45,7 +45,6 @@ fun PlaylistScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Top bar — только стрелка назад
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -91,7 +90,6 @@ fun PlaylistScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp)
                     ) {
-                        // Обложка во всю ширину
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
