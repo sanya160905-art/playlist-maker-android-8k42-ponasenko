@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.practicum.myapplication.R
+import com.practicum.myapplication.utils.trackCountText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +36,7 @@ fun TrackDetailScreen(
     val coroutineScope = rememberCoroutineScope()
     val tracksRepository = remember { Creator.getTracksRepository() }
     val playlistsRepository = remember { Creator.getPlaylistsRepository() }
+    val useDarkAssets = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     val trackFromDb by tracksRepository.getTrackByNameAndArtist(track).collectAsState(initial = null)
     val isFavorite = trackFromDb?.isFavorite ?: false
@@ -47,7 +49,7 @@ fun TrackDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // Top bar — только стрелка назад
         Box(
@@ -65,7 +67,7 @@ fun TrackDetailScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Назад",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -79,8 +81,12 @@ fun TrackDetailScreen(
             AsyncImage(
                 model = track.artworkUrl,
                 contentDescription = track.trackName,
-                placeholder = painterResource(id = R.drawable.ic_music),
-                error = painterResource(id = R.drawable.ic_music),
+                placeholder = painterResource(
+                    id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+                ),
+                error = painterResource(
+                    id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
@@ -95,7 +101,7 @@ fun TrackDetailScreen(
                 text = track.trackName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -103,7 +109,7 @@ fun TrackDetailScreen(
             Text(
                 text = track.artistName,
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -119,7 +125,9 @@ fun TrackDetailScreen(
                     modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_add_to_playlist),
+                        painter = painterResource(
+                            id = if (useDarkAssets) R.drawable.ic_add_to_playlist_dark else R.drawable.ic_add_to_playlist
+                        ),
                         contentDescription = "Добавить в плейлист",
                         tint = Color.Unspecified,
                         modifier = Modifier.size(48.dp)
@@ -135,9 +143,11 @@ fun TrackDetailScreen(
                     modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_favorite_circle),
+                        painter = painterResource(
+                            id = if (useDarkAssets) R.drawable.ic_favorite_circle_dark else R.drawable.ic_favorite_circle
+                        ),
                         contentDescription = "В избранное",
-                        tint = if (isFavorite) Color.Red else Color(0xFFCCCCCC),
+                        tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(48.dp)
                     )
                 }
@@ -153,12 +163,12 @@ fun TrackDetailScreen(
                 Text(
                     text = "Длительность",
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = track.trackTime,
                     fontSize = 14.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -180,11 +190,11 @@ fun TrackDetailScreen(
                     text = "Добавить в плейлист",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
-                HorizontalDivider(color = Color(0xFFE0E0E0))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -192,7 +202,7 @@ fun TrackDetailScreen(
                     Text(
                         text = "Плейлистов пока нет",
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
                     LazyColumn(
@@ -212,14 +222,27 @@ fun TrackDetailScreen(
                                     .padding(vertical = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "🎵", fontSize = 20.sp)
+                                AsyncImage(
+                                    model = playlist.coverImageUri,
+                                    contentDescription = playlist.name,
+                                    placeholder = painterResource(
+                                        id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+                                    ),
+                                    error = painterResource(
+                                        id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+                                    ),
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(RoundedCornerShape(6.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
-                                    Text(text = playlist.name, fontSize = 16.sp, color = Color.Black)
+                                    Text(text = playlist.name, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                                     Text(
-                                        text = "${playlist.tracks.size} треков",
+                                        text = trackCountText(playlist.tracks.size),
                                         fontSize = 13.sp,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -239,10 +262,11 @@ fun TrackDetailScreen(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
+                        tint = Color.White,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Закрыть")
+                    Text(text = "Закрыть", color = Color.White)
                 }
             }
         }

@@ -11,11 +11,9 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -25,18 +23,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practicum.myapplication.R
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
 
 @Composable
 fun SettingsScreen(
     onBackClick: () -> Unit
 ) {
-    val isDarkTheme = remember { mutableStateOf(false) }
+    val themePreferences = remember { com.practicum.myapplication.creator.Creator.getThemePreferences() }
+    val isDarkTheme by themePreferences.isDarkTheme.collectAsState(initial = false)
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Box(
             modifier = Modifier
@@ -55,14 +59,14 @@ fun SettingsScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.button_back),
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
 
             }
 
             Text(
                 text = stringResource(id = R.string.settings_title),
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center)
@@ -78,25 +82,28 @@ fun SettingsScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.dark_theme),
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.weight(1f)
             )
             Switch(
-                checked = isDarkTheme.value,
-                onCheckedChange = { isDarkTheme.value = it },
+                checked = isDarkTheme,
+                onCheckedChange = { newValue ->
+                    coroutineScope.launch {
+                        themePreferences.setDarkTheme(newValue)
+                    }
+                },
                 modifier = Modifier.size(width = 50.dp, height = 24.dp)
             )
         }
 
         HorizontalDivider(
             modifier = Modifier.padding(start = 0.dp),
-            color = Color(0xFFE0E0E0),
+            color = MaterialTheme.colorScheme.outlineVariant,
             thickness = 1.dp
         )
 
-        // Share app
         // Share app
         val shareTitle = stringResource(id = R.string.share_app)
         val shareMessage = stringResource(id = R.string.share_message)
@@ -115,7 +122,7 @@ fun SettingsScreen(
 
         HorizontalDivider(
             modifier = Modifier.padding(start = 0.dp),
-            color = Color(0xFFE0E0E0),
+            color = MaterialTheme.colorScheme.outlineVariant,
             thickness = 1.dp
         )
 
@@ -140,7 +147,7 @@ fun SettingsScreen(
 
         HorizontalDivider(
             modifier = Modifier.padding(start = 0.dp),
-            color = Color(0xFFE0E0E0),
+            color = MaterialTheme.colorScheme.outlineVariant,
             thickness = 1.dp
         )
 
@@ -160,14 +167,14 @@ fun SettingsScreen(
         ) {
             Text(
                 text = userAgreementTitle,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.weight(1f)
             )
             Text(
                 text = ">",
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 18.sp
             )
         }
@@ -190,7 +197,7 @@ fun SettingsMenuItemWithIcon(
     ) {
         Text(
             text = title,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(1f)
@@ -199,7 +206,7 @@ fun SettingsMenuItemWithIcon(
             imageVector = icon,
             contentDescription = title,
             modifier = Modifier.size(24.dp),
-            tint = Color.Gray
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

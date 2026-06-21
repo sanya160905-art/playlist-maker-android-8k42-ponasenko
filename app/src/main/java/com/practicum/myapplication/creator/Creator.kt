@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.practicum.myapplication.data.database.AppDatabase
 import com.practicum.myapplication.data.network.RetrofitNetworkClient
 import com.practicum.myapplication.data.preferences.SearchHistoryPreferences
+import com.practicum.myapplication.data.preferences.ThemePreferences
 import com.practicum.myapplication.data.repository.TracksRepositoryImpl
 import com.practicum.myapplication.data.repository.SearchHistoryRepositoryImpl
 import com.practicum.myapplication.data.repository.PlaylistsRepositoryImpl
@@ -14,6 +15,7 @@ import com.practicum.myapplication.domain.repository.SearchHistoryRepository
 import com.practicum.myapplication.domain.repository.PlaylistsRepository
 
 private val Context.dataStore by preferencesDataStore(name = "search_history_preferences")
+private val Context.themeDataStore by preferencesDataStore(name = "theme_preferences")
 
 object Creator {
 
@@ -42,5 +44,9 @@ object Creator {
 
     fun getPlaylistsRepository(): PlaylistsRepository {
         return PlaylistsRepositoryImpl(appDatabase)
+    }
+
+    fun getThemePreferences(): ThemePreferences {
+        return ThemePreferences(appContext.themeDataStore)
     }
 }

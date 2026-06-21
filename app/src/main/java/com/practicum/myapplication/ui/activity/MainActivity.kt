@@ -7,8 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.practicum.myapplication.creator.Creator
 import com.practicum.myapplication.navigation.PlaylistHost
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
 import com.practicum.myapplication.viewmodel.SearchViewModel
@@ -27,7 +31,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyApplicationTheme {
+            val themePreferences = remember { Creator.getThemePreferences() }
+            val isDarkTheme by themePreferences.isDarkTheme.collectAsState(initial = false)
+
+            MyApplicationTheme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()
                 Scaffold(
                     modifier = Modifier.fillMaxSize()

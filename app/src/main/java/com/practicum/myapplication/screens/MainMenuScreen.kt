@@ -2,6 +2,7 @@ package com.practicum.myapplication.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practicum.myapplication.R
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
+import androidx.compose.ui.graphics.luminance
 
 @Composable
 fun MainMenuScreen(
@@ -43,6 +46,9 @@ fun MainMenuScreen(
     onFavoritesClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
+
+    val useDarkIcons = MaterialTheme.colorScheme.background.luminance() < 0.5f
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,7 +73,7 @@ fun MainMenuScreen(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding(0.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
@@ -80,14 +86,18 @@ fun MainMenuScreen(
                 MenuDivider()
 
                 MenuItem(
-                    iconPainter = painterResource(id = R.drawable.ic_playlists_custom),
+                    iconPainter = painterResource(
+                        id = if (useDarkIcons) R.drawable.ic_playlists_custom_dark else R.drawable.ic_playlists_custom
+                    ),
                     title = stringResource(id = R.string.menu_playlists),
                     onClick = onPlaylistsClick
                 )
                 MenuDivider()
 
                 MenuItem(
-                    iconPainter = painterResource(id = R.drawable.ic_favorites_custom),
+                    iconPainter = painterResource(
+                        id = if (useDarkIcons) R.drawable.ic_favorites_custom_dark else R.drawable.ic_favorites_custom
+                    ),
                     title = stringResource(id = R.string.menu_favorites),
                     onClick = onFavoritesClick
                 )
@@ -116,7 +126,7 @@ fun MenuItem(
                 imageVector = icon,
                 contentDescription = title,
                 modifier = Modifier.size(24.dp),
-                tint = Color.Black
+                tint = MaterialTheme.colorScheme.onSurface
             )
         },
         title = title,
@@ -165,7 +175,7 @@ private fun MenuItemContent(
                 .weight(1f)
                 .padding(start = 16.dp),
             fontSize = 16.sp,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
         Icon(
             imageVector = Icons.Default.KeyboardArrowRight,
@@ -180,7 +190,7 @@ private fun MenuItemContent(
 fun MenuDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(start = 56.dp),
-        color = Color(0xFFE0E0E0),
+        color = MaterialTheme.colorScheme.outlineVariant,
         thickness = 1.dp
     )
 }

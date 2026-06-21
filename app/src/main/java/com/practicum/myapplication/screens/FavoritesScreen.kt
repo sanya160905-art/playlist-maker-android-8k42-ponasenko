@@ -1,6 +1,7 @@
 package com.practicum.myapplication.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -13,7 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +27,6 @@ import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.Image
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -37,11 +37,12 @@ fun FavoritesScreen(
     val tracksRepository = remember { Creator.getTracksRepository() }
     val favoriteTracks by tracksRepository.getFavoriteTracks().collectAsState(initial = emptyList())
     val coroutineScope = rememberCoroutineScope()
+    val useDarkAssets = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Box(
             modifier = Modifier
@@ -60,13 +61,13 @@ fun FavoritesScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(id = R.string.button_back),
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
 
             Text(
                 text = stringResource(id = R.string.favorites_title),
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center)
@@ -80,14 +81,16 @@ fun FavoritesScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_empty_media),
+                    painter = painterResource(
+                        id = if (useDarkAssets) R.drawable.ic_empty_media_dark else R.drawable.ic_empty_media
+                    ),
                     contentDescription = stringResource(id = R.string.favorites_empty),
                     modifier = Modifier.size(120.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(id = R.string.favorites_empty),
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 16.sp
                 )
             }
@@ -117,8 +120,12 @@ fun FavoritesScreen(
                         AsyncImage(
                             model = track.artworkUrl,
                             contentDescription = track.trackName,
-                            placeholder = painterResource(id = R.drawable.ic_music),
-                            error = painterResource(id = R.drawable.ic_music),
+                            placeholder = painterResource(
+                                id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+                            ),
+                            error = painterResource(
+                                id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+                            ),
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(RoundedCornerShape(4.dp))
@@ -128,16 +135,16 @@ fun FavoritesScreen(
                                 text = track.trackName,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
                                 text = track.artistName,
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
-                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
                 }
             }
         }

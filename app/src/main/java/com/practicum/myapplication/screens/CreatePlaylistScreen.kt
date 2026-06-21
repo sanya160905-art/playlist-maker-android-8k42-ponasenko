@@ -3,6 +3,7 @@ package com.practicum.myapplication.screens
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,8 +30,6 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.compose.ui.platform.LocalContext
 import android.content.Intent
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
 
 @Composable
 fun CreatePlaylistScreen(
@@ -42,28 +42,22 @@ fun CreatePlaylistScreen(
     val coroutineScope = rememberCoroutineScope()
     val playlistsRepository = remember { Creator.getPlaylistsRepository() }
     val context = LocalContext.current
-    // Launcher для выбора изображения из галереи
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
             try {
-                // Сохраняем долгосрочный доступ к файлу, чтобы URI оставался
-                // валидным после перезапуска приложения
                 context.contentResolver.takePersistableUriPermission(
                     it,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
             } catch (e: SecurityException) {
-                // Некоторые провайдеры (например, временные share-провайдеры)
-                // не поддерживают персистентные разрешения — это нормально,
-                // просто URI может не пережить перезапуск
             }
             coverImageUri = it
         }
     }
 
-    // Launcher для запроса разрешения (только для Android 12 и ниже)
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -75,7 +69,7 @@ fun CreatePlaylistScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // Top bar
         Box(
@@ -95,13 +89,13 @@ fun CreatePlaylistScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Назад",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
 
             Text(
                 text = "Новый плейлист",
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center)
@@ -120,7 +114,7 @@ fun CreatePlaylistScreen(
                     .size(240.dp)
                     .align(Alignment.CenterHorizontally)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFE8E8E8))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .clickable {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             imagePickerLauncher.launch("image/*")
@@ -162,14 +156,16 @@ fun CreatePlaylistScreen(
                 value = playlistName,
                 onValueChange = { playlistName = it },
                 label = { Text("Название плейлиста") },
-                placeholder = { Text("Введите название", color = Color(0xFFBDBEC0)) },
+                placeholder = { Text("Введите название", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color(0xFF3772E7),
-                    unfocusedBorderColor = Color(0xFFE0E0E0),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                     focusedLabelColor = Color(0xFF3772E7),
-                    cursorColor = Color(0xFF3772E7)
+                    cursorColor = Color(0xFF3772E7),
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground
                 ),
                 singleLine = true
             )
@@ -178,16 +174,18 @@ fun CreatePlaylistScreen(
                 value = playlistDescription,
                 onValueChange = { playlistDescription = it },
                 label = { Text("Описание") },
-                placeholder = { Text("Добавьте описание", color = Color(0xFFBDBEC0)) },
+                placeholder = { Text("Добавьте описание", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color(0xFF3772E7),
-                    unfocusedBorderColor = Color(0xFFE0E0E0),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                     focusedLabelColor = Color(0xFF3772E7),
-                    cursorColor = Color(0xFF3772E7)
+                    cursorColor = Color(0xFF3772E7),
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground
                 ),
                 maxLines = 4
             )
@@ -214,13 +212,14 @@ fun CreatePlaylistScreen(
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF3772E7),
-                    disabledContainerColor = Color(0xFFE0E0E0)
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             ) {
                 Text(
                     text = "Создать",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
         }

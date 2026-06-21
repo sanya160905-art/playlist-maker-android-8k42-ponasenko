@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,7 +64,10 @@ fun PlaylistsScreen(
                     .padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Список плейлистов пуст")
+                Text(
+                    text = "Список плейлистов пуст",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         } else {
             LazyColumn(
@@ -125,7 +127,7 @@ fun PlaylistListItem(playlist: Playlist, onClick: () -> Unit) {
             modifier = Modifier
                 .size(56.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFFE8E8E8)),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
             if (playlist.coverImageUri != null) {
@@ -148,12 +150,12 @@ fun PlaylistListItem(playlist: Playlist, onClick: () -> Unit) {
                 text = playlist.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = trackCountText(playlist.tracks.size),
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

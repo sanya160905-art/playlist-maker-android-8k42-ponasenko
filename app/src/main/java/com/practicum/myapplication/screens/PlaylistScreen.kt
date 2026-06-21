@@ -14,7 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,7 +42,7 @@ fun PlaylistScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // Top bar — только стрелка назад
         Box(
@@ -60,7 +60,7 @@ fun PlaylistScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Назад",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -96,7 +96,7 @@ fun PlaylistScreen(
                                 .fillMaxWidth()
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFFE8E8E8)),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             contentAlignment = Alignment.Center
                         ) {
                             if (currentPlaylist.coverImageUri != null) {
@@ -117,7 +117,7 @@ fun PlaylistScreen(
                             text = currentPlaylist.name,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onBackground
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -126,7 +126,7 @@ fun PlaylistScreen(
                             Text(
                                 text = currentPlaylist.description,
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
@@ -134,7 +134,7 @@ fun PlaylistScreen(
                         Text(
                             text = "$totalMinutes минут · ${trackCountText(currentPlaylist.tracks.size)}",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -151,7 +151,7 @@ fun PlaylistScreen(
                         ) {
                             Text(
                                 text = "В этом плейлисте пока нет треков",
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 16.sp
                             )
                         }
@@ -184,6 +184,8 @@ fun PlaylistTrackItem(
     onLongClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val useDarkAssets = MaterialTheme.colorScheme.background.luminance() < 0.5f
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -197,8 +199,12 @@ fun PlaylistTrackItem(
         AsyncImage(
             model = track.artworkUrl,
             contentDescription = track.trackName,
-            placeholder = painterResource(id = R.drawable.ic_music),
-            error = painterResource(id = R.drawable.ic_music),
+            placeholder = painterResource(
+                id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+            ),
+            error = painterResource(
+                id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+            ),
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(4.dp))
@@ -212,20 +218,20 @@ fun PlaylistTrackItem(
                 text = track.trackName,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1
             )
             Text(
                 text = "${track.artistName} • ${track.trackTime}",
                 fontSize = 13.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
             )
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = Color.Gray,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
     }

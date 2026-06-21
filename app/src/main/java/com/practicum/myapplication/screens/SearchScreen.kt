@@ -1,5 +1,6 @@
 package com.practicum.myapplication.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,21 +15,22 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.practicum.myapplication.R
 import com.practicum.myapplication.model.SearchState
 import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.ui.theme.MyApplicationTheme
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.Image
 
 @Composable
 fun SearchScreen(
@@ -39,11 +41,12 @@ fun SearchScreen(
     val searchState by viewModel.searchScreenState.collectAsState()
     var searchText by rememberSaveable { mutableStateOf("") }
     var isFocused by remember { mutableStateOf(false) }
+    val useDarkAssets = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // Top bar с кнопкой назад
         Box(
@@ -63,13 +66,13 @@ fun SearchScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Назад",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
 
             Text(
                 text = stringResource(id = R.string.search_title),
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center)
@@ -86,7 +89,7 @@ fun SearchScreen(
             placeholder = {
                 Text(
                     text = stringResource(id = R.string.search_placeholder),
-                    color = Color(0xFFBDBEC0),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 16.sp
                 )
             },
@@ -109,21 +112,21 @@ fun SearchScreen(
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color.Transparent,
                 focusedBorderColor = Color.Transparent,
-                unfocusedContainerColor = Color(0xFFE8E8E8),
-                focusedContainerColor = Color(0xFFE8E8E8),
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 cursorColor = Color(0xFF3772E7),
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground
             ),
             textStyle = LocalTextStyle.current.copy(
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp
             ),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = stringResource(id = R.string.search_button),
-                    tint = Color(0xFFBDBEC0),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
             },
@@ -139,7 +142,7 @@ fun SearchScreen(
                         Icon(
                             imageVector = Icons.Default.Clear,
                             contentDescription = stringResource(id = R.string.clear_button),
-                            tint = Color(0xFFBDBEC0),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -158,7 +161,7 @@ fun SearchScreen(
                     Text(
                         text = stringResource(id = R.string.search_placeholder),
                         fontSize = 16.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -181,7 +184,9 @@ fun SearchScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
-                            painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_nothing_found),
+                            painter = painterResource(
+                                id = if (useDarkAssets) R.drawable.ic_nothing_found_dark else R.drawable.ic_nothing_found
+                            ),
                             contentDescription = stringResource(id = R.string.no_tracks_found),
                             modifier = Modifier.size(120.dp)
                         )
@@ -189,7 +194,7 @@ fun SearchScreen(
                         Text(
                             text = stringResource(id = R.string.no_tracks_found),
                             fontSize = 16.sp,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 } else {
@@ -203,11 +208,10 @@ fun SearchScreen(
                             SearchTrackItem(
                                 track = tracks[index],
                                 onClick = {
-                                    viewModel.onTrackClicked(tracks[index])
                                     onTrackClick(tracks[index])
                                 }
                             )
-                            HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                            HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
                         }
                     }
                 }
@@ -217,7 +221,7 @@ fun SearchScreen(
                 Column(
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
-                        .background(Color(0xFFE8E8E8), RoundedCornerShape(
+                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(
                             topStart = 0.dp,
                             topEnd = 0.dp,
                             bottomStart = 12.dp,
@@ -227,15 +231,15 @@ fun SearchScreen(
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 12.dp),
                         thickness = 0.5.dp,
-                        color = Color(0xFFCCCCCC)
+                        color = MaterialTheme.colorScheme.outlineVariant
                     )
 
-                    state.tracks.forEach { track ->
-                        HistoryTrackItem(
-                            track = track,
+                    state.queries.forEach { query ->
+                        HistoryQueryItem(
+                            query = query,
                             onClick = {
-                                viewModel.onTrackClicked(track)
-                                onTrackClick(track)
+                                searchText = query
+                                viewModel.updateQuery(query)
                             }
                         )
                     }
@@ -249,23 +253,25 @@ fun SearchScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_no_internet),
+                        painter = painterResource(
+                            id = if (useDarkAssets) R.drawable.ic_no_internet_dark else R.drawable.ic_no_internet
+                        ),
                         contentDescription = "Нет подключения",
                         modifier = Modifier.size(120.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Проблемы со связью",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Загрузка не удалась. Проверьте подключение к интернету",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 32.dp)
                     )
                 }
@@ -274,9 +280,9 @@ fun SearchScreen(
     }
 }
 
-// Элемент истории — с иконкой часов
+
 @Composable
-fun HistoryTrackItem(track: Track, onClick: () -> Unit) {
+fun HistoryQueryItem(query: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -291,15 +297,17 @@ fun HistoryTrackItem(track: Track, onClick: () -> Unit) {
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
-            text = track.trackName,
+            text = query,
             fontSize = 16.sp,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
 
 @Composable
 fun SearchTrackItem(track: Track, onClick: () -> Unit) {
+    val useDarkAssets = MaterialTheme.colorScheme.background.luminance() < 0.5f
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -308,11 +316,15 @@ fun SearchTrackItem(track: Track, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        coil.compose.AsyncImage(
+        AsyncImage(
             model = track.artworkUrl,
             contentDescription = track.trackName,
-            placeholder = androidx.compose.ui.res.painterResource(id = R.drawable.ic_music),
-            error = androidx.compose.ui.res.painterResource(id = R.drawable.ic_music),
+            placeholder = painterResource(
+                id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+            ),
+            error = painterResource(
+                id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
+            ),
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(4.dp))
@@ -327,17 +339,17 @@ fun SearchTrackItem(track: Track, onClick: () -> Unit) {
                 text = track.trackName,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = track.artistName,
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = track.trackTime,
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

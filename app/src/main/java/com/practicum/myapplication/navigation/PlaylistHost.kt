@@ -8,7 +8,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.screens.MainMenuScreen
 import com.practicum.myapplication.screens.SearchScreen
@@ -21,7 +20,24 @@ import com.practicum.myapplication.screens.CreatePlaylistScreen
 import com.practicum.myapplication.viewmodel.SearchViewModel
 import com.practicum.myapplication.viewmodel.PlaylistViewModel
 
+// Защита от кликов во время анимации перехода между экранами
+private object NavigationGuard {
+    private var lastNavigationTime = 0L
+    private const val COOLDOWN_MS = 400L
+
+    fun canNavigate(): Boolean {
+        val now = System.currentTimeMillis()
+        return if (now - lastNavigationTime >= COOLDOWN_MS) {
+            lastNavigationTime = now
+            true
+        } else {
+            false
+        }
+    }
+}
+
 private fun safePopBackStack(navController: NavHostController) {
+    if (!NavigationGuard.canNavigate()) return
     if (navController.previousBackStackEntry != null) {
         navController.popBackStack()
     }
@@ -30,6 +46,7 @@ private fun safePopBackStack(navController: NavHostController) {
 // launchSingleTop = true гарантирует, что повторный быстрый клик
 // не создаст дублирующую запись в стеке навигации
 private fun safeNavigate(navController: NavHostController, route: String) {
+    if (!NavigationGuard.canNavigate()) return
     navController.navigate(route) {
         launchSingleTop = true
     }

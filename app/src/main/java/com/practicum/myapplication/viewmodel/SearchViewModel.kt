@@ -9,7 +9,6 @@ import com.practicum.myapplication.creator.Creator
 import com.practicum.myapplication.domain.repository.SearchHistoryRepository
 import com.practicum.myapplication.domain.repository.TracksRepository
 import com.practicum.myapplication.model.SearchState
-import com.practicum.myapplication.model.Track
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,12 +55,6 @@ class SearchViewModel(
         }
     }
 
-    fun onTrackClicked(track: Track) {
-        viewModelScope.launch {
-            historyRepository.addToHistory(track)
-        }
-    }
-
     fun clearHistory() {
         viewModelScope.launch {
             historyRepository.clearHistory()
@@ -89,6 +82,10 @@ class SearchViewModel(
     private suspend fun performSearch(query: String) {
         lastQuery = query
         _searchScreenState.update { SearchState.Loading }
+
+        // Сохраняем сам текстовый запрос в историю
+        historyRepository.addToHistory(query)
+
         val result = tracksRepository.searchTracks(query)
         result.onSuccess { tracks ->
             _searchScreenState.update { SearchState.Success(foundList = tracks) }
