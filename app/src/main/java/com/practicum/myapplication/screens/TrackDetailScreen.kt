@@ -225,12 +225,8 @@ fun TrackDetailScreen(
                                 AsyncImage(
                                     model = playlist.coverImageUri,
                                     contentDescription = playlist.name,
-                                    placeholder = painterResource(
-                                        id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
-                                    ),
-                                    error = painterResource(
-                                        id = if (useDarkAssets) R.drawable.ic_music_dark else R.drawable.ic_music
-                                    ),
+                                    placeholder = painterResource(id = R.drawable.ic_add_image_placeholder),
+                                    error = painterResource(id = R.drawable.ic_add_image_placeholder),
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(RoundedCornerShape(6.dp)),

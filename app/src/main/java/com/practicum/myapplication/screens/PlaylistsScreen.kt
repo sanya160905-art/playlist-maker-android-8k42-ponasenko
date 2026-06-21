@@ -21,6 +21,8 @@ import com.practicum.myapplication.model.Playlist
 import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 import com.practicum.myapplication.utils.trackCountText
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,7 +140,11 @@ fun PlaylistListItem(playlist: Playlist, onClick: () -> Unit) {
                     contentScale = ContentScale.Crop
                 )
             } else {
-                Text(text = "🎵", fontSize = 24.sp)
+                Image(
+                    painter = painterResource(id = com.practicum.myapplication.R.drawable.ic_add_image_placeholder),
+                    contentDescription = playlist.name,
+                    modifier = Modifier.size(28.dp)
+                )
             }
         }
         Column(

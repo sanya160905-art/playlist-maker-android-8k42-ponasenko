@@ -27,6 +27,7 @@ import com.practicum.myapplication.model.Track
 import com.practicum.myapplication.viewmodel.PlaylistViewModel
 import kotlinx.coroutines.launch
 import com.practicum.myapplication.utils.trackCountText
+import androidx.compose.foundation.Image
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -107,7 +108,11 @@ fun PlaylistScreen(
                                     contentScale = ContentScale.Crop
                                 )
                             } else {
-                                Text(text = "🎵", fontSize = 56.sp)
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_add_image_placeholder),
+                                    contentDescription = currentPlaylist.name,
+                                    modifier = Modifier.size(64.dp)
+                                )
                             }
                         }
 
